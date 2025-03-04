@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main":"src/main.jsx",
   "scripts": {
     "dev": "vite",
-    "build:dev": "vite build",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "vite build",
     "lint": "eslint .",
-    "start": "react-scripts start",
     "preview": "vite preview"
   },
   "dependencies": {
