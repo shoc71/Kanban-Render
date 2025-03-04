@@ -14,11 +14,8 @@ app.use(cors({
     credentials: true
 }));
 
-app.use("/auth", require("./routes/jwtAuthUser"))
-
-app.use("/dashboard", require('./routes/dashboard'))
-
-// API Routes
+app.use("/auth", require("./routes/jwtAuthUser"));
+app.use("/dashboard", require('./routes/dashboard'));
 app.use("/api/tasks", require("./routes/tasks")); // Example route for tasks
 
 // Serve React build in production
@@ -26,6 +23,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../../client/build")));
 
   console.log(__dirname)
+  console.log("Serving React from: " + path.join(__dirname, "../../client/build"));
 
   // For all other routes, send back the React app
   app.get("*", (req, res) => {
