@@ -1,5 +1,5 @@
-// const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000';
-const API_URL = ''
+const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000';
+// const API_URL = ''
 
 // Login function (allowing email or username)
 export const loginUser = async (emailOrUsername, password) => {
