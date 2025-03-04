@@ -1,6 +1,6 @@
 const jwtGenerator = require("../utils/jwtGenerator");
 const bcrypt = require("bcrypt");
-const User = require("../models/User"); 
+const User = require("../models/user")
 
 const registerUser = async (req, res) => {
     console.log("🟢 Register request received:", req.body);
