@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "install": "cd client && npm install --legacy-peer-deps && cd ../server && npm install",
   "start": "cd server && npm start", 
   "dev": "concurrently \"npm run server\" \"npm run client\"",
   "build": "cd client && npm install --legacy-peer-deps && npm run build && npm install --legacy-peer-deps && cd ../server && npm run build"
