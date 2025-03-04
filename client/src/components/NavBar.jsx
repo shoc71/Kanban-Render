@@ -1,14 +1,6 @@
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 
-/**
- * NavBar component.
- *
- * @param {Object} props
- * @param {boolean} props.isDarkMode
- * @param {Function} props.toggleTheme
- * @param {boolean} [props.isLoggedIn]
- */
 function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
   const navigate = useNavigate();
 
