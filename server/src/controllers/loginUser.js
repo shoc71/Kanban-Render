@@ -1,6 +1,6 @@
 const jwtGenerator = require("../utils/jwtGenerator");
 const bcrypt = require("bcrypt");
-const User = require("../models/User"); // Import the Sequelize User model
+const User = require("../models/user")
 
 const loginUser = async (req, res) => {
     try {
