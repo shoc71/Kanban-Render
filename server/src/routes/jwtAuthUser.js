@@ -1,7 +1,4 @@
 const router = require("express").Router();
-// const pool = require("../config/db")
-// const bcrypt = require("bcrypt")
-// const jwtGenerator = require("../utils/jwtGenerator")
 const loginUser = require("../controllers/loginUser");
 const { registerUser } = require("../controllers/registerUser");
 const { validUser } = require("../middleware/validateUser");

@@ -13,9 +13,9 @@ app.use(cors({
     credentials: true
 }));
 
-app.use("/auth", require("./src/routes/jwtAuthUser"))
+app.use("/auth", require("./routes/jwtAuthUser"))
 
-app.use("/dashboard", require('./src/routes/dashboard'))
+app.use("/dashboard", require('./routes/dashboard'))
 
 // API Routes
 app.use("/api/tasks", require("./routes/tasks")); // Example route for tasks
