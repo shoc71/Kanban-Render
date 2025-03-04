@@ -3,64 +3,77 @@ import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 
 const Dashboard = () => {
   const username = localStorage.getItem("username") || "User";
+  const userId = localStorage.getItem("userId"); // Assuming the user ID is stored when logged in
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    fetch("/api/tasks")
+    fetch("/dashboard")
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.error("Error fetching tasks:", err));
   }, []);
 
-  const addTask = () => {
+  const addTask = async () => {
     if (!newTask.trim()) return;
-    const task = { id: Date.now(), title: newTask, status: "To-Do" };
-    setTasks([...tasks, task]);
-    setNewTask("");
+
+    const task = { title: newTask, status: "To-Do", userId };
+    
+    try {
+      const res = await fetch("/dashboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+      const newTaskFromDB = await res.json();
+      setTasks([...tasks, newTaskFromDB]);
+      setNewTask("");
+    } catch (err) {
+      console.error("Error adding task:", err);
+    }
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const deleteTask = async (id) => {
+    try {
+      await fetch(`/dashboard/${id}`, {
+        method: "DELETE",
+      });
+      setTasks(tasks.filter((task) => task.id !== id));
+    } catch (err) {
+      console.error("Error deleting task:", err);
+    }
   };
 
-  const updateTaskStatus = (id, direction) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === id) {
-          if (direction === "forward") {
-            return {
-              ...task,
-              status:
-                task.status === "To-Do"
-                  ? "In-Progress"
-                  : task.status === "In-Progress"
-                  ? "Done"
-                  : "Done",
-            };
-          } else if (direction === "backward") {
-            return {
-              ...task,
-              status:
-                task.status === "Done"
-                  ? "In-Progress"
-                  : task.status === "In-Progress"
-                  ? "To-Do"
-                  : "To-Do",
-            };
-          }
-        }
-        return task;
-      })
-    );
+  const updateTaskStatus = async (id, direction) => {
+    const statusMap = {
+      "To-Do": "In-Progress",
+      "In-Progress": "Done",
+      "Done": "To-Do",
+    };
+    const newStatus = direction === "forward" ? statusMap["To-Do"] : statusMap["Done"];
+
+    try {
+      const res = await fetch(`/dashboard/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const updatedTask = await res.json();
+      setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)));
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
   };
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const statuses = ["To-Do", "In-Progress", "Done"];
   return (
     <Container className="mt-4 min-vh-100">
       <h2 className="text-center">Welcome, {username}!</h2>
@@ -88,13 +101,9 @@ const Dashboard = () => {
         />
       </div>
       <Row>
-        {statuses.map((status) => (
-          <Col
-            key={status}
-            md={4}
-            style={{ backgroundColor: getColumnBackgroundColor(status) }}
-          >
-            <h4 className="text-center bg-info text-muted">{status}</h4>
+        {["To-Do", "In-Progress", "Done"].map((status) => (
+          <Col key={status} md={4} style={{ backgroundColor: getColumnBackgroundColor(status) }}>
+            <h4 className="text-center">{status}</h4>
             {filteredTasks
               .filter((task) => task.status === status)
               .map((task) => (
