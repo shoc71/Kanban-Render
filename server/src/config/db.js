@@ -20,13 +20,13 @@ require("dotenv").config();
 
 const { Sequelize } = require('sequelize');
 
-let pool;
+let sequelize;
 
 if (process.env.DATABASE_URL) {
-  pool = new Sequelize(process.env.DATABASE_URL);
+  sequelize = new Sequelize(process.env.DATABASE_URL);
 } else {
   // Fallback for local development (if DB_URL is not set)
-  pool = new Sequelize(
+  sequelize = new Sequelize(
     process.env.DB_NAME, 
     process.env.DB_USER, 
     process.env.DB_PW, 
@@ -37,4 +37,9 @@ if (process.env.DATABASE_URL) {
   );
 }
 
-module.exports = pool;
+// sync db
+sequelize.sync({ alter: true })  // `alter: true` updates the schema without losing data
+    .then(() => console.log('Database synchronized'))
+    .catch((err) => console.error('Error syncing database:', err));
+
+module.exports = sequelize;

@@ -1,37 +1,44 @@
-const jwtGenerator = require("../utils/jwtGenerator")
-const pool = require("../config/db")
-const bcrypt = require("bcrypt")
+const jwtGenerator = require("../utils/jwtGenerator");
+const bcrypt = require("bcrypt");
+const User = require("../models/User"); // Import the Sequelize User model
 
 const loginUser = async (req, res) => {
     try {
-
         console.log("Login request received:", req.body);
 
         const { emailOrUsername, password } = req.body;
 
-        const user = await pool.query("SELECT * FROM users WHERE user_email = $1 OR user_name = $1",
-            [emailOrUsername]
-        );
+        // Use Sequelize to find the user by email or username
+        const user = await User.findOne({
+            where: {
+                [Sequelize.Op.or]: [
+                    { user_email: emailOrUsername },
+                    { user_name: emailOrUsername }
+                ]
+            }
+        });
 
-        console.log("User found:", user.rows);
+        console.log("User found:", user);
 
-        if (user.rows.length === 0) {
-            return res.status(401).json({ success: false, message: "User with this email or name already exists." });
+        if (!user) {
+            return res.status(401).json({ success: false, message: "User with this email or name does not exist." });
         }
 
-        const validPassword = await bcrypt.compare(password, user.rows[0].user_password);
+        // Compare the provided password with the hashed password from the database
+        const validPassword = await bcrypt.compare(password, user.user_password);
 
         if (!validPassword) {
             return res.status(401).json({ success: false, message: "Email/username or Password is Incorrect!" });
         }
 
-        const jwtToken = jwtGenerator(user.rows[0].user_id)
-        console.log("Generated User ID:", user.rows[0].user_id);
+        // Generate JWT token
+        const jwtToken = jwtGenerator(user.user_id);
+        console.log("Generated User ID:", user.user_id);
 
-        res.status(201).json({ success: true, data: jwtToken });
+        res.status(200).json({ success: true, data: jwtToken });
 
     } catch (error) {
-        console.error("Server Login error: ", error)
+        console.error("Server Login error: ", error);
         res.status(500).json({ success: false, message: `Server Login Error: ${error.message}` });
     }
 };

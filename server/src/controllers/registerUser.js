@@ -1,6 +1,6 @@
 const jwtGenerator = require("../utils/jwtGenerator");
-const pool = require("../config/db");
 const bcrypt = require("bcrypt");
+const User = require("../models/User"); 
 
 const registerUser = async (req, res) => {
     console.log("🟢 Register request received:", req.body);
@@ -9,9 +9,11 @@ const registerUser = async (req, res) => {
 
     try {
         console.log("🔍 Checking if user already exists in the database...");
-        const user = await pool.query("SELECT * FROM users WHERE user_email = $1", [email]);
+        
+        // Using Sequelize's `findOne` method to check if the user already exists
+        const user = await User.findOne({ where: { user_email: email } });
 
-        if (user.rows.length > 0) {
+        if (user) {
             console.log("⚠️ Email already exists:", email);
             return res.status(409).json({ success: false, message: "Email already registered. Please log in." });
         }
@@ -25,14 +27,17 @@ const registerUser = async (req, res) => {
         console.log("✅ Password hashed successfully");
 
         console.log("📝 Inserting new user into the database...");
-        const newUser = await pool.query(
-            "INSERT INTO users (user_name, user_email, user_password) VALUES ($1, $2, $3) RETURNING *",
-            [name, email, bcryptPassword]
-        );
-        console.log("✅ New user inserted:", newUser.rows[0]);
+        
+        // Using Sequelize's `create` method to insert the new user into the database
+        const newUser = await User.create({
+            user_name: name,
+            user_email: email,
+            user_password: bcryptPassword,
+        });
+        console.log("✅ New user inserted:", newUser);
 
         console.log("🔑 Generating JWT token...");
-        const token = jwtGenerator(newUser.rows[0].user_id);
+        const token = jwtGenerator(newUser.user_id);
         console.log("✅ JWT token generated");
 
         res.status(200).json({ success: true, message: "Registration successful", token });

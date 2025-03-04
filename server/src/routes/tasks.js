@@ -1,16 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../config/db")
+const { Task } = require("../models"); // Import the Task model
 
 // 📌 Create a new task
 router.post("/", async (req, res) => {
   try {
-    const { title, status } = req.body;
-    const newTask = await pool.query(
-      "INSERT INTO tasks (title, status) VALUES ($1, $2) RETURNING *",
-      [title, status || "To-Do"]
-    );
-    res.json({ success: true, data: newTask.rows[0] });
+    const { title, status, user_id } = req.body;  // Assuming user_id is also passed for associating with a user
+
+    // Create a new task using Sequelize
+    const newTask = await Task.create({
+      title,
+      status: status || "To-Do",  // Default status is 'To-Do'
+      user_id  // Assuming we are associating a user with the task
+    });
+
+    res.json({ success: true, data: newTask });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -20,8 +24,10 @@ router.post("/", async (req, res) => {
 // 📌 Get all tasks
 router.get("/", async (req, res) => {
   try {
-    const tasks = await pool.query("SELECT * FROM tasks ORDER BY id ASC");
-    res.json({ success: true, data: tasks.rows });
+    const tasks = await Task.findAll({
+      order: [["id", "ASC"]],  // Order by task ID ascending
+    });
+    res.json({ success: true, data: tasks });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -33,14 +39,18 @@ router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const updatedTask = await pool.query(
-      "UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *",
-      [status, id]
+
+    // Update the task's status using Sequelize
+    const updatedTask = await Task.update(
+      { status },  // Update status field
+      { where: { id }, returning: true, plain: true }  // Use `returning: true` to get the updated task
     );
-    if (updatedTask.rows.length === 0) {
+
+    if (updatedTask[0] === 0) {  // If no rows were affected, task wasn't found
       return res.status(404).json({ success: false, message: "Task not found" });
     }
-    res.json({ success: true, data: updatedTask.rows[0] });
+
+    res.json({ success: true, data: updatedTask[1] });  // Return the updated task
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -51,10 +61,16 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const deleteTask = await pool.query("DELETE FROM tasks WHERE id = $1 RETURNING *", [id]);
-    if (deleteTask.rows.length === 0) {
+
+    // Delete the task using Sequelize
+    const deletedTask = await Task.destroy({
+      where: { id }
+    });
+
+    if (deletedTask === 0) {  // If no rows were deleted, task wasn't found
       return res.status(404).json({ success: false, message: "Task not found" });
     }
+
     res.json({ success: true, message: "Task deleted" });
   } catch (err) {
     console.error(err.message);
