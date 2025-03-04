@@ -1,4 +1,4 @@
-const API_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // Login function (allowing email or username)
 export const loginUser = async (emailOrUsername, password) => {
