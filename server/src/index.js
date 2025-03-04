@@ -25,6 +25,8 @@ app.use("/api/tasks", require("./routes/tasks")); // Example route for tasks
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../../client/build")));
 
+  console.log(__dirname)
+
   // For all other routes, send back the React app
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../../client", "build", "index.html"));
