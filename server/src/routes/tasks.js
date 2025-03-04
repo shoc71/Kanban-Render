@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Task } = require("../models"); // Import the Task model
+const { Task } = require("../models/tasks"); // Import the Task model
 
 // 📌 Create a new task
 router.post("/", async (req, res) => {
