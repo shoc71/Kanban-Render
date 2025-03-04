@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main":"src/main.jsx",
+  "main": "src/main.jsx",
   "scripts": {
     "dev": "vite",
     "start": "vite",
