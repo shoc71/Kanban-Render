@@ -1,5 +1,4 @@
 const API_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
-// const API_URL = ''
 
 // Login function (allowing email or username)
 export const loginUser = async (emailOrUsername, password) => {

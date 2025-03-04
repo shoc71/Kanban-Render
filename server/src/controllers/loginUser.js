@@ -3,13 +3,17 @@ const pool = require("../config/db")
 const bcrypt = require("bcrypt")
 
 const loginUser = async (req, res) => {
-
-    const { emailOrUsername, password } = req.body;
-
     try {
-        const user = await pool.query("SELECT * FROM users WHERE user_email = $1 OR user_name = $2",
-            [emailOrUsername, emailOrUsername]
+
+        console.log("Login request received:", req.body);
+
+        const { emailOrUsername, password } = req.body;
+
+        const user = await pool.query("SELECT * FROM users WHERE user_email = $1 OR user_name = $1",
+            [emailOrUsername]
         );
+
+        console.log("User found:", user.rows);
 
         if (user.rows.length === 0) {
             return res.status(401).json({ success: false, message: "User with this email or name already exists." });
