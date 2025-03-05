@@ -21,14 +21,12 @@ export const loginUser = async (emailOrUsername, password, navigate) => {
             // Navigate to dashboard (Ensure navigate is passed as a prop)
             navigate("/dashboard");
 
-        if (!data.success) throw new Error(data.message);
-
         return data; // Ensure data is returned correctly
         } else {
             return { success: false, message: data.message || "Login failed" };
         }
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("Server Client/Login error:", error);
         return { success: false, message: `Server Client/Login error: ${error.message}` };
     }
 };

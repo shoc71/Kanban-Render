@@ -22,13 +22,14 @@ function LoginPage() {
       setLoading(true); // Start loading
 
       // Call loginUser function from API utility
-      const res = await loginUser(emailOrUsername, password);
-      console.log("Response from loginUser:", res); // Log the full response for debugging
+      console.log("Login Function Type:", typeof loginUser);
+      const res = await loginUser(emailOrUsername, password, navigate);
+      console.log("Response from loginUser:", res); 
       console.log("Login Function:", typeof loginUser);
 
       // Check if the response is successful
-      if (res.success && res.data) {
-        const { token, user_id } = res.data.data;
+      if (res.success) {
+        const { token, user_id } = res.data;
         console.log("✅ Login successful");
 
         // Store the token and user_id in localStorage
@@ -41,7 +42,7 @@ function LoginPage() {
           console.log("User ID stored:", user_id);
 
           // Redirect to the dashboard after successful login
-          navigate("/dashboard");
+          setTimeout(() => navigate("/dashboard"), 2000);
         } else {
           setError("Missing token or user_id in response");
         }

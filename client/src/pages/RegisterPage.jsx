@@ -30,7 +30,7 @@ function RegisterPage() {
       }
 
       setSuccess("Registration successful! You can now log in.");
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/login"), 5000);
     } catch (err) {
       console.error("Registration error:", err);
       setError("Registration failed. Please try again later.");

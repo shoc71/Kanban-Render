@@ -5,7 +5,7 @@ const { Sequelize } = require('sequelize');
 
 const loginUser = async (req, res) => {
     try {
-        console.log("Login request received:", req.body);
+        // console.log("Login request received:", req.body);
 
         const { emailOrUsername, password } = req.body;
 
@@ -19,7 +19,7 @@ const loginUser = async (req, res) => {
             }
         });
 
-        console.log("User found:", user);
+        // console.log("User found:", user);
 
         // If no user found, return an error
         if (!user) {
