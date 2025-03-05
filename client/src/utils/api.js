@@ -20,7 +20,7 @@ export const loginUser = async (emailOrUsername, password, navigate) => {
             // Navigate to dashboard (Ensure navigate is passed as a prop)
             navigate("/dashboard");
 
-            return { success: true, data: data.data };
+            return { success: true, data: data };
         } else {
             return { success: false, message: data.message || "Login failed" };
         }
