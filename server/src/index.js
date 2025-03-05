@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const path = require("path");
 const authorizeUser = require("./middleware/authorizingUser");
-const sequelize = require("./config/database"); 
+const sequelize = require("./config/db"); 
 
 require("dotenv").config();
 const PORT = process.env.PORT || 5001;
