@@ -42,7 +42,7 @@ function LoginPage() {
           console.log("User ID stored:", user_id);
 
           // Redirect to the dashboard after successful login
-          setTimeout(() => navigate("/dashboard"), 2000);
+          setTimeout(() => navigate("/dashboard"), 5000);
         } else {
           setError("Missing token or user_id in response");
         }
