@@ -36,7 +36,13 @@ const loginUser = async (req, res) => {
         const jwtToken = jwtGenerator(user.user_id);
         console.log("Generated User ID:", user.user_id);
 
-        res.status(200).json({ success: true, data: jwtToken });
+        res.status(200).json({ 
+            success: true, 
+            data: {
+                token: jwtToken,
+                user_id: user.user_id // Include user_id here as well
+            } 
+        });
 
     } catch (error) {
         console.error("Server Login error: ", error);
