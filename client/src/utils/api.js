@@ -10,6 +10,7 @@ export const loginUser = async (emailOrUsername, password, navigate) => {
         });
 
         const data = await response.json();
+        if (!data.success) throw new Error(data.message);
 
         if (response.ok) {
             // Store data in localStorage
@@ -20,11 +21,14 @@ export const loginUser = async (emailOrUsername, password, navigate) => {
             // Navigate to dashboard (Ensure navigate is passed as a prop)
             navigate("/dashboard");
 
-            return { success: true, data: data };
+        if (!data.success) throw new Error(data.message);
+
+        return data; // Ensure data is returned correctly
         } else {
             return { success: false, message: data.message || "Login failed" };
         }
     } catch (error) {
+        console.error("Login error:", error);
         return { success: false, message: `Server Client/Login error: ${error.message}` };
     }
 };
@@ -44,6 +48,7 @@ export const registerUser = async (name, email, password) => {
 
         return await response.json();
     } catch (error) {
+        console.error("Register error:", error);
         return { success: false, message: `Server Client/Register error: ${error.message}` };
     }
 };

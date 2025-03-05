@@ -24,10 +24,12 @@ function LoginPage() {
       // Call loginUser function from API utility
       const res = await loginUser(emailOrUsername, password);
       console.log("Response from loginUser:", res); // Log the full response for debugging
+      console.log("Login Function:", typeof loginUser);
 
       // Check if the response is successful
       if (res.success && res.data) {
         const { token, user_id } = res.data.data;
+        console.log("✅ Login successful");
 
         // Store the token and user_id in localStorage
         if (token && user_id) {
