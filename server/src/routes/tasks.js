@@ -8,6 +8,10 @@ router.post("/", async (req, res) => {
   try {
     const { title, status, user_id } = req.body;  // Assuming user_id is also passed for associating with a user
 
+    if (!title || !status || !user_id) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
     // Create a new task using Sequelize
     const newTask = await Task.create({
       title,
@@ -17,8 +21,8 @@ router.post("/", async (req, res) => {
 
     res.json({ success: true, data: newTask });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error("Error creating task:", error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
 

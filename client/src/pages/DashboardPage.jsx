@@ -94,7 +94,7 @@ const Dashboard = () => {
   };
 
   const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(filter.toLowerCase())
+    task.title && task.title.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
