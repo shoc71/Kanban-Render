@@ -15,8 +15,8 @@ const Task = sequelize.define(
       allowNull: false,
     },
     status: {
-      type: DataTypes.STRING,
-      defaultValue: "To-Do",
+      type: DataTypes.ENUM("To-Do", "In-Progress", "Done"),
+      allowNull: false,
     },
     user_id: {
       type: DataTypes.STRING, // Change from UUID to STRING
