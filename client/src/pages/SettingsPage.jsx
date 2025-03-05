@@ -46,8 +46,19 @@ const SettingsPage = () => {
             Logout
           </Button>
         )}
-        <Button variant="success" className="btn-lg w-50" onClick={() => navigate("/dashboard")}>
-          Go to Dashboard
+        <Button
+        variant="success"
+        className="btn-lg w-50"
+        onClick={() => {
+            if (username) {
+            navigate("/dashboard");
+            } else {
+            alert("You must be logged in to access the dashboard.");
+            }
+        }}
+        disabled={!username} // Disable the button if no user is logged in
+        >
+        Go to Dashboard
         </Button>
         <Button variant="warning" className="btn-lg w-50" onClick={clearLocalStorage}>
           Clear Data & Refresh

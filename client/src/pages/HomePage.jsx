@@ -15,7 +15,7 @@ function HomePage() {
       <Row className="w-100">
         <Col md={8} className="mx-auto">
           <h1 className="display-2 fw-bold text-primary">
-            Welcome to KanbanPro
+            Welcome to Kanban Render
           </h1>
           <p className="lead mt-3">
             The ultimate task management tool for teams and individuals.

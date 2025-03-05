@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 import Footer from "./components/Footer";
@@ -13,6 +13,11 @@ import ContactMePage from "./pages/ContactMePage"
 import SettingsPage from "./pages/SettingsPage"
 
 function App() {
+  const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+    return token ? children : <Navigate to="/login" replace />;
+  };
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
@@ -46,7 +51,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={ <Dashboard/>} />
+        <Route path="/dashboard" element={ <ProtectedRoute><Dashboard/></ProtectedRoute>} />
         <Route path="/contact-us" element={ <ContactMePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         {/* <Route path="/about" element={<AboutMePage />} /> */}
