@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Task = require("../models"); 
+const Task = require("../models/tasks"); 
 const authorizeUser = require("../middleware/authorizingUser"); // Ensure authentication
 
 // 📌 Create a new task (Protected Route)
