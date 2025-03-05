@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { Task } = require("../models/tasks"); 
-const authenticateUser = require("../middleware/authenticateUser"); // Ensure authentication
+const authorizeUser = require("../middleware/authorizingUser"); // Ensure authentication
 
 // 📌 Create a new task (Protected Route)
-router.post("/", authenticateUser, async (req, res) => {
+router.post("/", authorizeUser, async (req, res) => {
   try {
     const { title, status } = req.body;
     if (!title || !status) {
@@ -25,7 +25,7 @@ router.post("/", authenticateUser, async (req, res) => {
 });
 
 // 📌 Get tasks for a specific user (Protected Route)
-router.get("/", authenticateUser, async (req, res) => {
+router.get("/", authorizeUser, async (req, res) => {
   try {
     const tasks = await Task.findAll({ where: { user_id: req.user.id } });
     res.status(200).json({ success: true, data: tasks });
@@ -36,7 +36,7 @@ router.get("/", authenticateUser, async (req, res) => {
 });
 
 // 📌 Update task status (Protected Route)
-router.put("/:id", authenticateUser, async (req, res) => {
+router.put("/:id", authorizeUser, async (req, res) => {
   try {
     const { status } = req.body;
 
@@ -59,7 +59,7 @@ router.put("/:id", authenticateUser, async (req, res) => {
 });
 
 // 📌 Delete a task (Protected Route)
-router.delete("/:id", authenticateUser, async (req, res) => {
+router.delete("/:id", authorizeUser, async (req, res) => {
   try {
     const deletedTask = await Task.destroy({ where: { id: req.params.id, user_id: req.user.id } });
     if (!deletedTask) return res.status(404).json({ success: false, message: "Task not found" });
