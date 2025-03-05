@@ -12,6 +12,7 @@ function LoginPage() {
   const handleLogin = async () => {
     try {
       const res = await loginUser(emailOrUsername, password);
+      console.log("Response from loginUser:", res); // Log the full response
       if (res.success && res.data) {
         localStorage.setItem("token", res.data.token); // Store the token
         localStorage.setItem("user_id", res.data.user_id); // Store the user_id
