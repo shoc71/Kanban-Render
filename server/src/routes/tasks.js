@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
     const { title, status, user_id } = req.body;  // Assuming user_id is also passed for associating with a user
 
     if (!title || !status || !user_id) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
+      return res.status(400).json({ success: false, message: `Missing required fields ${ title, status, user_id }` });
     }
 
     // Create a new task using Sequelize
