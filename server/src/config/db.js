@@ -49,7 +49,7 @@ if (process.env.DATABASE_URL) {
 // Enable UUID extension for PostgreSQL if not already enabled
 sequelize.authenticate()
   .then(() => {
-    console.log('Connection has been established successfully.');
+    // console.log('Connection has been established successfully.');
     return sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
   })
   .then(() => {

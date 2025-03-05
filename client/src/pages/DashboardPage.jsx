@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 
 const Dashboard = () => {
   const username = localStorage.getItem("username") || "User";
-  const userId = localStorage.getItem("user_id"); // Assuming the user ID is stored when logged in
+  const userId = localStorage.getItem("user_id");
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
@@ -27,10 +27,16 @@ const Dashboard = () => {
         }
       })
       .catch((err) => console.error("Error fetching tasks:", err));
-  }, [userId]); // Depend on userId for re-fetching tasks if it changes
+    }, [userId]); // Depend on userId for re-fetching tasks if it changes
 
   const addTask = async () => {
+    console.log("user_id before sending task:", userId);  // Should not be null
     if (!newTask.trim()) return;
+
+    if (!userId) {
+      console.error("User ID is missing. Cannot add task.");
+      return;  // Don't proceed without user ID
+    }
 
     const task = { title: newTask, status: "To-Do", user_id: userId };
     const token = localStorage.getItem("token");

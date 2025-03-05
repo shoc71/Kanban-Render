@@ -63,10 +63,10 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
             <li className="nav-item">
               <Link
                 className="nav-link"
-                to="/contact-me"
+                to="/contact-us"
                 style={{ fontSize: "1.7rem" }}
               >
-                Book Link 2
+                Contact Us
               </Link>
             </li>
             {/* Auth Button */}
