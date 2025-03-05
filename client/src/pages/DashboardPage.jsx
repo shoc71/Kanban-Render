@@ -40,13 +40,18 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,  // Use the token from localStorage
+          "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Use the token from localStorage
         },
         body: JSON.stringify(task),
       });
+      if (res.ok) {
       const newTaskFromDB = await res.json();
       setTasks([...tasks, newTaskFromDB]);
       setNewTask("");
+    } else {
+      const errorData = await res.json();
+      console.error("Error adding task:", errorData.message);
+    }
     } catch (err) {
       console.error("Error adding task:", err);
     }

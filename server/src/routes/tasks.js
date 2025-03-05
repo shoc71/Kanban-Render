@@ -6,18 +6,15 @@ const { Sequelize } = require('sequelize');
 // 📌 Create a new task
 router.post("/", async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Log the incoming request body
     const { title, status, user_id } = req.body;  // Assuming user_id is also passed for associating with a user
 
     if (!title || !status || !user_id) {
-      return res.status(400).json({ success: false, message: `Missing required fields ${ title, status, user_id }` });
+      return res.status(400).json({ success: false, message: `Missing required fields` });
     }
 
     // Create a new task using Sequelize
-    const newTask = await Task.create({
-      title,
-      status: status || "To-Do",  // Default status is 'To-Do'
-      user_id  // Assuming we are associating a user with the task
-    });
+    const newTask = await Task.create({ title, status, user_id });
 
     res.json({ success: true, data: newTask });
   } catch (err) {
