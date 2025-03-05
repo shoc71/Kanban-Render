@@ -11,18 +11,33 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
+      // Call loginUser function from API utility
       const res = await loginUser(emailOrUsername, password);
-      console.log("Response from loginUser:", res); // Log the full response
+      console.log("Response from loginUser:", res); // Log the full response for debugging
+
+      // Check if the response is successful
       if (res.success && res.data) {
-        localStorage.setItem("token", res.data.token); // Store the token
-        localStorage.setItem("user_id", res.data.user_id); // Store the user_id
-        console.log("Token:", res.data.token);
-        console.log("User ID:", res.data.user_id);
-        navigate("/dashboard");
+        const { token, user_id } = res.data;
+        
+        // Store the token and user_id in localStorage
+        if (token && user_id) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("user_id", user_id);
+
+          // Log the stored values for debugging
+          console.log("Token stored:", token);
+          console.log("User ID stored:", user_id);
+
+          // Redirect to the dashboard after successful login
+          navigate("/dashboard");
+        } else {
+          setError("Missing token or user_id in response");
+        }
       } else {
         setError(res.message || "Login failed");
       }
     } catch (err) {
+      // Handle errors if the login request fails
       setError(`Login failed. Please check your credentials. ${err}`);
     }
   };
