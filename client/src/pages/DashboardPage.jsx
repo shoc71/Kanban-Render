@@ -23,6 +23,10 @@ const Dashboard = () => {
       .catch((err) => console.error("Error fetching tasks:", err));
   }, [userId]);
 
+  // On successful login:
+  localStorage.setItem("token", jwtToken);  // Store the JWT token
+  localStorage.setItem("user_id", userId);
+
   const addTask = async () => {
     if (!newTask.trim()) return;
 
@@ -33,6 +37,7 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(task),
       });
@@ -48,6 +53,9 @@ const Dashboard = () => {
     try {
       await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
+        headers: {
+        "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Add the token here
+      },
       });
       setTasks(tasks.filter((task) => task.id !== id));
     } catch (err) {
@@ -67,7 +75,8 @@ const Dashboard = () => {
       const res = await fetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Add the token here
         },
         body: JSON.stringify({ status: newStatus }),
       });
