@@ -11,7 +11,11 @@ const Dashboard = () => {
   useEffect(() => {
     if (!userId) return; // Avoid fetching if no user is logged in
 
-    fetch(`/api/tasks?user_id=${userId}`)
+    fetch(`/api/tasks?user_id=${userId}`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include token in headers
+        }
+      })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
