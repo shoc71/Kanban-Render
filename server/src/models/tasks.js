@@ -1,49 +1,36 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Assuming your Sequelize instance is in this file
-const User = require('./user'); // Assuming you have the User model defined
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../config/db");
+const { v4: uuidv4 } = require("uuid");
 
-const Task = sequelize.define('Task', {
+const Task = sequelize.define(
+  "Task",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
     title: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     status: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      defaultValue: "To-Do",
     },
     user_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: User,  // 'User' model
-            key: 'user_id'  // Reference to the 'user_id' column in the 'users' table
-        },
-        onDelete: 'CASCADE',  // When the associated user is deleted, tasks are also deleted
-        allowNull: false
+      type: DataTypes.STRING, // Change from UUID to STRING
+      references: {
+        model: "users",
+        key: "user_id",
+      },
+      onDelete: "CASCADE",
     },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW,
-        onUpdate: Sequelize.NOW
-    }
-}, {
-    tableName: 'tasks',  // Specify the table name
-    timestamps: false,  // If you're using `created_at` and `updated_at`, set this to `false`
-});
-
-Task.belongsTo(User, {
-    foreignKey: 'user_id',
-    targetKey: 'user_id',
-    onDelete: 'CASCADE'
-});
+  },
+  {
+    tableName: "tasks",
+    timestamps: true, // Automatically adds createdAt and updatedAt
+  }
+);
 
 module.exports = Task;
