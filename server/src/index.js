@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const path = require("path");
+const authorizeUser = require("./middleware/authorizingUser");
+
 
 require("dotenv").config();
 const PORT = process.env.PORT || 5001;
@@ -16,7 +18,7 @@ app.use(cors({
 
 app.use("/auth", require("./routes/jwtAuthUser"));
 app.use("/dashboard", require('./routes/dashboard'));
-app.use("/api/tasks", require("./routes/tasks")); // Example route for tasks
+app.use("/api/tasks", authorizeUser, require("./routes/tasks")); // Example route for tasks
 
 // Serve React build in production
 if (process.env.NODE_ENV === "production") {

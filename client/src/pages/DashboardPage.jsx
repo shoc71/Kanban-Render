@@ -13,9 +13,9 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     if (!userId || !token) return;
 
-    fetch(`/api/tasks?user_id=${userId}`, {
+    fetch(`/api/tasks`, {
       headers: {
-        "Authorization": `Bearer ${token}`,  // Use token from localStorage for authentication
+        "Authorization": `Bearer ${token}`,
       },
     })
       .then((res) => res.json())

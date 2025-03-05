@@ -1,37 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const { Task } = require("../models/tasks"); // Import the Task model
-const { Sequelize } = require('sequelize');
 
 // 📌 Create a new task
 router.post("/", async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Log the incoming request body
-    const { title, status, user_id } = req.body;  // Assuming user_id is also passed for associating with a user
-
+    const { title, status } = req.body;
     if (!title || !status || !user_id) {
-      return res.status(400).json({ success: false, message: `Missing required fields` });
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    // Create a new task using Sequelize
-    const newTask = await Task.create({ title, status, user_id });
+    const validStatuses = ["To-Do", "In-Progress", "Done"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
 
-    res.json({ success: true, data: newTask });
-  } catch (err) {
-    console.error("Error creating task:", error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    const newTask = await Task.create({ title, status, user_id:req.user.id });
+    res.status(201).json({ success: true, data: newTask });
+  } catch (error) {
+    console.error("Error creating task:", error.stack);
+    res.status(500).json({ success: false, message: "Internal Server Error: Could not create task" });
   }
 });
 
-// 📌 Get all tasks
+// 📌 Get tasks for a specific user
 router.get("/", async (req, res) => {
   try {
-    const tasks = await Task.findAll({
-      order: [["id", "ASC"]],  // Order by task ID ascending
-    });
-    res.json({ success: true, data: tasks });
-  } catch (err) {
-    console.error(err.message);
+    const userId = req.query.user_id;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    const tasks = await Task.findAll({ where: { user_id: req.user.id } });
+    res.status(200).json({ success: true, data: tasks });
+  } catch (error) {
+    console.error("Error fetching tasks:", error.stack);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 });
@@ -42,20 +45,21 @@ router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Update the task's status using Sequelize
-    const updatedTask = await Task.update(
-      { status },  // Update status field
-      { where: { id }, returning: true, plain: true }  // Use `returning: true` to get the updated task
-    );
-
-    if (updatedTask[0] === 0) {  // If no rows were affected, task wasn't found
-      return res.status(404).json({ success: false, message: "Task not found" });
+    const validStatuses = ["To-Do", "In-Progress", "Done"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
     }
 
-    res.json({ success: true, data: updatedTask[1] });  // Return the updated task
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    const task = await Task.findOne({ where: { id: req.params.id, user_id: req.user.id } });
+    if (!task) return res.status(404).json({ success: false, message: "Task not found" });
+
+    task.status = status;
+    await task.save();
+
+    res.json({ success: true, data: task });
+  } catch (error) {
+    console.error("Error updating task:", error.stack);
+    res.status(500).json({ success: false, message: "Error updating task status" });
   }
 });
 
@@ -63,20 +67,13 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Delete the task using Sequelize
-    const deletedTask = await Task.destroy({
-      where: { id }
-    });
-
-    if (deletedTask === 0) {  // If no rows were deleted, task wasn't found
-      return res.status(404).json({ success: false, message: "Task not found" });
-    }
+    const deletedTask = await Task.destroy({ where: { id: req.params.id, user_id: req.user.id } });
+    if (!deletedTask) return res.status(404).json({ success: false, message: "Task not found" });
 
     res.json({ success: true, message: "Task deleted" });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+  } catch (error) {
+    console.error("Error deleting task:", error.stack);
+    res.status(500).json({ success: false, message: "Error deleting task" });
   }
 });
 

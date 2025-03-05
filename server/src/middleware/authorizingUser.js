@@ -3,7 +3,7 @@ require("dotenv").config();
 
 function authorizeUser(req, res, next) {
     // Get the token from the Authorization header, which should be in the format "Bearer <token>"
-    const jwtToken = req.header("Authorization")?.replace("Bearer ", "");
+    const jwtToken = req.header("Authorization")?.split(" ")[1];
 
     // If no token is found, respond with an unauthorized status
     if (!jwtToken) {

@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../utils/api";
-import { Button, Form, Alert } from "react-bootstrap";
+import { Button, Form, Alert, Spinner } from "react-bootstrap";
 
 function LoginPage() {
   const navigate = useNavigate();
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
+      setLoading(true); // Start loading
+
       // Call loginUser function from API utility
       const res = await loginUser(emailOrUsername, password);
       console.log("Response from loginUser:", res); // Log the full response for debugging
@@ -18,7 +28,7 @@ function LoginPage() {
       // Check if the response is successful
       if (res.success && res.data) {
         const { token, user_id } = res.data.data;
-        
+
         // Store the token and user_id in localStorage
         if (token && user_id) {
           localStorage.setItem("token", token);
@@ -38,7 +48,9 @@ function LoginPage() {
       }
     } catch (err) {
       // Handle errors if the login request fails
-      setError(`Login failed. Please check your credentials. ${err}`);
+      setError(`Login failed. Please check your credentials. ${err.message}`);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -72,8 +84,9 @@ function LoginPage() {
             variant="primary"
             className="border border-dark mt-3 btn-lg"
             onClick={handleLogin}
+            disabled={loading} // Disable button when loading
           >
-            <b>Login</b>
+            {loading ? <Spinner animation="border" size="sm" /> : <b>Login</b>}
           </Button>
           <Button
             variant="secondary"
