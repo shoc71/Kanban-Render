@@ -13,6 +13,11 @@ const SettingsPage = () => {
     navigate("/login"); // Redirect to login page
   };
 
+  const clearLocalStorage = () => {
+    localStorage.clear(); // Completely clears localStorage
+    window.location.reload(); // Refresh the page to apply changes
+  };
+
   return (
     <Container className="text-center mt-5 min-vh-100">
       <h2 className="display-4">Settings</h2>
@@ -36,6 +41,9 @@ const SettingsPage = () => {
         )}
         <Button variant="success" className="btn-lg w-50" onClick={() => navigate("/dashboard")}>
           Go to Dashboard
+        </Button>
+        <Button variant="warning" className="btn-lg w-50" onClick={clearLocalStorage}>
+          Clear Data & Refresh
         </Button>
       </div>
     </Container>
