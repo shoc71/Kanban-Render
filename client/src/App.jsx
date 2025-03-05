@@ -9,7 +9,8 @@ import RegisterPage from "./pages/RegisterPage";
 
 import ErrorPage from "./utils/ErrorPage";
 import Dashboard from "./pages/DashboardPage";
-import ContactMe from "./pages/ContactMePage"
+import ContactMePage from "./pages/ContactMePage"
+import SettingsPage from "./pages/SettingsPage"
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -46,9 +47,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={ <Dashboard/>} />
-        <Route path="/contact-us" element={ <ContactMe />} />
+        <Route path="/contact-us" element={ <ContactMePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         {/* <Route path="/about" element={<AboutMePage />} /> */}
-        {/* <Route path="/contact-me" element={<ContactMePage />} /> */}
         <Route path="*" element={<ErrorPage />} />
       </Routes>
       <Footer />
