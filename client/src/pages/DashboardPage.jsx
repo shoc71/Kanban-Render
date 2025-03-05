@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Check if there's a valid user ID and JWT token in localStorage before fetching tasks
-    const userId = localStorage.getItem("user_id") || res.data.user_id;
+    const userId = localStorage.getItem(res.data.user_id);
     const token = localStorage.getItem("token");
     if (!userId || !token) return; // Avoid fetching if no user or token is available
 
