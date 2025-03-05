@@ -9,13 +9,15 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    if (!userId) return; // Avoid fetching if no user is logged in
+    // Check if there's a valid user ID and JWT token in localStorage before fetching tasks
+    const token = localStorage.getItem("token");
+    if (!userId || !token) return; // Avoid fetching if no user or token is available
 
     fetch(`/api/tasks?user_id=${userId}`, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,  // Include token in headers
-        }
-      })
+      headers: {
+        "Authorization": `Bearer ${token}`,  // Use the token from localStorage for auth
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -25,23 +27,20 @@ const Dashboard = () => {
         }
       })
       .catch((err) => console.error("Error fetching tasks:", err));
-  }, [userId]);
-
-  // On successful login:
-  localStorage.setItem("token", jwtToken);  // Store the JWT token
-  localStorage.setItem("user_id", userId);
+  }, [userId]); // Depend on userId for re-fetching tasks if it changes
 
   const addTask = async () => {
     if (!newTask.trim()) return;
 
     const task = { title: newTask, status: "To-Do", user_id: userId };
-    
+    const token = localStorage.getItem("token");
+
     try {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`,
+          "Authorization": `Bearer ${token}`,  // Use the token from localStorage
         },
         body: JSON.stringify(task),
       });
@@ -54,12 +53,14 @@ const Dashboard = () => {
   };
 
   const deleteTask = async (id) => {
+    const token = localStorage.getItem("token");
+
     try {
       await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-        "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Add the token here
-      },
+          "Authorization": `Bearer ${token}`,  // Add the token here
+        },
       });
       setTasks(tasks.filter((task) => task.id !== id));
     } catch (err) {
@@ -74,13 +75,14 @@ const Dashboard = () => {
       "Done": "To-Do",
     };
     const newStatus = direction === "forward" ? statusMap["To-Do"] : statusMap["Done"];
+    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Add the token here
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Add the token here
         },
         body: JSON.stringify({ status: newStatus }),
       });
