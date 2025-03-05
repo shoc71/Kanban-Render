@@ -27,7 +27,7 @@ function LoginPage() {
 
       // Check if the response is successful
       if (res.success && res.data) {
-        const { token, user_id } = res.data.data;
+        const { token, user_id } = res.data;
 
         // Store the token and user_id in localStorage
         if (token && user_id) {

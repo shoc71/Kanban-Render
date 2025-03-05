@@ -1,28 +1,29 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // Login function (allowing email or username)
-export const loginUser = async (emailOrUsername, password) => {
+export const loginUser = async (emailOrUsername, password, navigate) => {
     try {
         const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ emailOrUsername, password })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ emailOrUsername, password }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            return {
-                success: true,
-                data: data, // Ensure `data` contains token and user_id
-            };
-        } else {
-            return {
-                success: false,
-                message: data.message || "Login failed",
-            };
-        }
+            // Store data in localStorage
+            localStorage.setItem("token", data.data.token);
+            localStorage.setItem("user_id", data.data.user_id);
+            localStorage.setItem("username", data.data.username); // Store username
+            
+            // Navigate to dashboard (Ensure navigate is passed as a prop)
+            navigate("/dashboard");
 
+            return { success: true, data: data.data };
+        } else {
+            return { success: false, message: data.message || "Login failed" };
+        }
     } catch (error) {
         return { success: false, message: `Server Client/Login error: ${error.message}` };
     }

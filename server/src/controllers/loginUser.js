@@ -47,7 +47,8 @@ const loginUser = async (req, res) => {
             success: true, 
             data: {
                 token: jwtToken, // Pass the generated token
-                user_id: user.user_id // Also pass the user ID
+                user_id: user.user_id, // Also pass the user ID
+                username: user.user_name
             } 
         });
 

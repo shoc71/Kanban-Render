@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { Task } = require("../models/tasks"); // Import the Task model
+const { Task } = require("../models/tasks"); 
+const authenticateUser = require("../middleware/authenticateUser"); // Ensure authentication
 
-// 📌 Create a new task
-router.post("/", async (req, res) => {
+// 📌 Create a new task (Protected Route)
+router.post("/", authenticateUser, async (req, res) => {
   try {
     const { title, status } = req.body;
-    if (!title || !status || !user_id) {
+    if (!title || !status) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
@@ -15,7 +16,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid status" });
     }
 
-    const newTask = await Task.create({ title, status, user_id:req.user.id });
+    const newTask = await Task.create({ title, status, user_id: req.user.id });
     res.status(201).json({ success: true, data: newTask });
   } catch (error) {
     console.error("Error creating task:", error.stack);
@@ -23,14 +24,9 @@ router.post("/", async (req, res) => {
   }
 });
 
-// 📌 Get tasks for a specific user
-router.get("/", async (req, res) => {
+// 📌 Get tasks for a specific user (Protected Route)
+router.get("/", authenticateUser, async (req, res) => {
   try {
-    const userId = req.query.user_id;
-    if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID is required" });
-    }
-
     const tasks = await Task.findAll({ where: { user_id: req.user.id } });
     res.status(200).json({ success: true, data: tasks });
   } catch (error) {
@@ -39,10 +35,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 📌 Update task status
-router.put("/:id", async (req, res) => {
+// 📌 Update task status (Protected Route)
+router.put("/:id", authenticateUser, async (req, res) => {
   try {
-    const { id } = req.params;
     const { status } = req.body;
 
     const validStatuses = ["To-Do", "In-Progress", "Done"];
@@ -63,10 +58,9 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// 📌 Delete a task
-router.delete("/:id", async (req, res) => {
+// 📌 Delete a task (Protected Route)
+router.delete("/:id", authenticateUser, async (req, res) => {
   try {
-    const { id } = req.params;
     const deletedTask = await Task.destroy({ where: { id: req.params.id, user_id: req.user.id } });
     if (!deletedTask) return res.status(404).json({ success: false, message: "Task not found" });
 
