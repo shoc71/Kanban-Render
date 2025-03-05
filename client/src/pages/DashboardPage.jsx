@@ -30,6 +30,7 @@ const Dashboard = () => {
     }, [userId]); // Depend on userId for re-fetching tasks if it changes
 
   const addTask = async () => {
+    const userId = localStorage.getItem("user_id");
     console.log("user_id before sending task:", userId);  // Should not be null
     if (!newTask.trim()) return;
 
