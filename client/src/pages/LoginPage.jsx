@@ -15,6 +15,8 @@ function LoginPage() {
       if (res.success && res.data) {
         localStorage.setItem("token", res.data.token); // Store the token
         localStorage.setItem("user_id", res.data.user_id); // Store the user_id
+        console.log(res.data.token)
+        console.log(res.data.user_id)
         navigate("/dashboard");
       } else {
         setError(res.message || "Login failed");
