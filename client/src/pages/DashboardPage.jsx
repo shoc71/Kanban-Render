@@ -9,14 +9,13 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    // Check if there's a valid user ID and JWT token in localStorage before fetching tasks
-    const userId = localStorage.getItem("user_id");
+    // Fetch tasks only if there's a valid user ID and token
     const token = localStorage.getItem("token");
-    if (!userId || !token) return; // Avoid fetching if no user or token is available
+    if (!userId || !token) return;
 
     fetch(`/api/tasks?user_id=${userId}`, {
       headers: {
-        "Authorization": `Bearer ${token}`,  // Use the token from localStorage for auth
+        "Authorization": `Bearer ${token}`,  // Use token from localStorage for authentication
       },
     })
       .then((res) => res.json())
@@ -28,38 +27,38 @@ const Dashboard = () => {
         }
       })
       .catch((err) => console.error("Error fetching tasks:", err));
-    }, [userId]); // Depend on userId for re-fetching tasks if it changes
+  }, [userId]);
 
   const addTask = async () => {
-    const userId = localStorage.getItem("user_id");
-    console.log("user_id before sending task:", userId);  // Should not be null
+    const token = localStorage.getItem("token");
+
     if (!newTask.trim()) return;
 
     if (!userId) {
       console.error("User ID is missing. Cannot add task.");
-      return;  // Don't proceed without user ID
+      return;
     }
 
     const task = { title: newTask, status: "To-Do", user_id: userId };
-    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`,  // Use the token from localStorage
+          "Authorization": `Bearer ${token}`, // Use token for authorization
         },
         body: JSON.stringify(task),
       });
+
       if (res.ok) {
-      const newTaskFromDB = await res.json();
-      setTasks([...tasks, newTaskFromDB]);
-      setNewTask("");
-    } else {
-      const errorData = await res.json();
-      console.error("Error adding task:", errorData.message);
-    }
+        const newTaskFromDB = await res.json();
+        setTasks((prevTasks) => [...prevTasks, newTaskFromDB]); // Add new task directly to state
+        setNewTask(""); // Reset input field
+      } else {
+        const errorData = await res.json();
+        console.error("Error adding task:", errorData.message);
+      }
     } catch (err) {
       console.error("Error adding task:", err);
     }
@@ -72,10 +71,10 @@ const Dashboard = () => {
       await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,  // Add the token here
+          "Authorization": `Bearer ${token}`, // Include token for authorization
         },
       });
-      setTasks(tasks.filter((task) => task.id !== id));
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Remove deleted task from state
     } catch (err) {
       console.error("Error deleting task:", err);
     }
@@ -95,12 +94,14 @@ const Dashboard = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,  // Add the token here
+          "Authorization": `Bearer ${token}`, // Include token for authorization
         },
         body: JSON.stringify({ status: newStatus }),
       });
       const updatedTask = await res.json();
-      setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)));
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === id ? updatedTask : task)) // Update task in state
+      );
     } catch (err) {
       console.error("Error updating task:", err);
     }
