@@ -13,7 +13,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!userId) return; // Avoid fetching if no user is logged in
 
-    fetch(`/tasks?user_id=${userId}`)
+    fetch(`/api/tasks?user_id=${userId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -32,7 +32,7 @@ const Dashboard = () => {
     const task = { title: newTask, status: "To-Do", user_id: userId };
 
     try {
-      const res = await fetch("/tasks", {
+      const res = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const Dashboard = () => {
   // Delete a task
   const deleteTask = async (id) => {
     try {
-      const res = await fetch(`/tasks/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       if (data.success) {
@@ -84,7 +84,7 @@ const Dashboard = () => {
         : "To-Do";
 
     try {
-      const res = await fetch(`/tasks/${id}`, {
+      const res = await fetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
