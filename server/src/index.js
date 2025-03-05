@@ -3,12 +3,11 @@ const app = express();
 const cors = require("cors");
 const path = require("path");
 const authorizeUser = require("./middleware/authorizingUser");
-
+const sequelize = require("./config/database"); 
 
 require("dotenv").config();
 const PORT = process.env.PORT || 5001;
 
-// console.log(`JWT_SECRET: ${process.env.JWT_SECRET}`)
 app.use(express.json());
 app.use(cors({
     origin: "*",
@@ -39,6 +38,14 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: "Server Error" });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server live on http://localhost:${PORT}`)
-});
+// Sync database BEFORE starting server
+sequelize.sync() // { force: true } drops and recreates tables (use cautiously)
+  .then(() => {
+    console.log("Database synced");
+    app.listen(PORT, () => {
+      console.log(`Server live on http://localhost:${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error("DB Sync Error:", err);
+  });
