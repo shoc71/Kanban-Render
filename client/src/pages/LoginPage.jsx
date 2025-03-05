@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../utils/api";
 import { Button, Form, Alert } from "react-bootstrap";
@@ -15,7 +13,8 @@ function LoginPage() {
     try {
       const res = await loginUser(emailOrUsername, password);
       if (res.success && res.data) {
-        localStorage.setItem("token", res.data);
+        localStorage.setItem("token", res.data.token); // Store the token
+        localStorage.setItem("user_id", res.data.user_id); // Store the user_id
         navigate("/dashboard");
       } else {
         setError(res.message || "Login failed");

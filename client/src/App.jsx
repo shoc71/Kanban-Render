@@ -1,7 +1,5 @@
-import React from 'react';
-
 import { Route, Routes } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
