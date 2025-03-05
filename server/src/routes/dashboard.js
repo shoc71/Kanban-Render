@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const pool = require("../config/db");
 const authorizeUser = require("../middleware/authorizingUser");
-
+const { Sequelize } = require('sequelize');
 // get all tasks for logged-in users
 
 router.get('/', authorizeUser, async (req, res) => {

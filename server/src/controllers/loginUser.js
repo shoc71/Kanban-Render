@@ -1,6 +1,7 @@
 const jwtGenerator = require("../utils/jwtGenerator");
 const bcrypt = require("bcrypt");
 const User = require("../models/user")
+const { Sequelize } = require('sequelize');
 
 const loginUser = async (req, res) => {
     try {
