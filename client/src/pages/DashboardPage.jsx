@@ -1,77 +1,109 @@
-import React from 'react';
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 
 const Dashboard = () => {
   const username = localStorage.getItem("username") || "User";
-  const userId = localStorage.getItem("user_id"); // Assuming the user ID is stored when logged in
+  const userId = localStorage.getItem("user_id"); // Ensuring user ID is used
+
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
 
+  // Fetch tasks for the logged-in user
   useEffect(() => {
-    fetch("/dashboard")
-      .then((res) => res.json())
-      .then((data) => setTasks(data))
-      .catch((err) => console.error("Error fetching tasks:", err));
-  }, []);
+    if (!userId) return; // Avoid fetching if no user is logged in
 
+    fetch(`/tasks?user_id=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setTasks(data.data);
+        } else {
+          console.error("Error fetching tasks:", data.message);
+        }
+      })
+      .catch((err) => console.error("Error fetching tasks:", err));
+  }, [userId]);
+
+  // Add a new task
   const addTask = async () => {
     if (!newTask.trim()) return;
 
-    const task = { title: newTask, status: "To-Do", userId };
-    
+    const task = { title: newTask, status: "To-Do", user_id: userId };
+
     try {
-      const res = await fetch("/dashboard", {
+      const res = await fetch("/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(task),
       });
-      const newTaskFromDB = await res.json();
-      setTasks([...tasks, newTaskFromDB]);
-      setNewTask("");
+
+      const data = await res.json();
+      if (data.success) {
+        setTasks([...tasks, data.data]);
+        setNewTask("");
+      } else {
+        console.error("Error adding task:", data.message);
+      }
     } catch (err) {
       console.error("Error adding task:", err);
     }
   };
 
+  // Delete a task
   const deleteTask = async (id) => {
     try {
-      await fetch(`/dashboard/${id}`, {
-        method: "DELETE",
-      });
-      setTasks(tasks.filter((task) => task.id !== id));
+      const res = await fetch(`/tasks/${id}`, { method: "DELETE" });
+      const data = await res.json();
+
+      if (data.success) {
+        setTasks(tasks.filter((task) => task.id !== id));
+      } else {
+        console.error("Error deleting task:", data.message);
+      }
     } catch (err) {
       console.error("Error deleting task:", err);
     }
   };
 
-  const updateTaskStatus = async (id, direction) => {
+  // Update task status
+  const updateTaskStatus = async (id, currentStatus, direction) => {
     const statusMap = {
       "To-Do": "In-Progress",
       "In-Progress": "Done",
       "Done": "To-Do",
     };
-    const newStatus = direction === "forward" ? statusMap["To-Do"] : statusMap["Done"];
+
+    const newStatus =
+      direction === "forward"
+        ? statusMap[currentStatus]
+        : currentStatus === "To-Do"
+        ? "Done"
+        : "To-Do";
 
     try {
-      const res = await fetch(`/dashboard/${id}`, {
+      const res = await fetch(`/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ status: newStatus }),
       });
-      const updatedTask = await res.json();
-      setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)));
+
+      const data = await res.json();
+      if (data.success) {
+        setTasks(tasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task)));
+      } else {
+        console.error("Error updating task:", data.message);
+      }
     } catch (err) {
       console.error("Error updating task:", err);
     }
   };
 
+  // Filter tasks by keyword
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(filter.toLowerCase())
   );
@@ -79,6 +111,8 @@ const Dashboard = () => {
   return (
     <Container className="mt-4 min-vh-100">
       <h2 className="text-center">Welcome, {username}!</h2>
+
+      {/* Task Input */}
       <Form className="mt-4 d-flex">
         <Form.Control
           type="text"
@@ -90,6 +124,8 @@ const Dashboard = () => {
           Add Task
         </Button>
       </Form>
+
+      {/* Filter Input */}
       <div className="mt-3">
         <Form.Label>
           <strong>Filter tasks using keywords:</strong>
@@ -102,6 +138,8 @@ const Dashboard = () => {
           onChange={(e) => setFilter(e.target.value)}
         />
       </div>
+
+      {/* Task Columns */}
       <Row>
         {["To-Do", "In-Progress", "Done"].map((status) => (
           <Col key={status} md={4} style={{ backgroundColor: getColumnBackgroundColor(status) }}>
@@ -117,7 +155,7 @@ const Dashboard = () => {
                         <Button
                           size="sm"
                           variant="warning"
-                          onClick={() => updateTaskStatus(task.id, "backward")}
+                          onClick={() => updateTaskStatus(task.id, task.status, "backward")}
                         >
                           &larr; Back
                         </Button>
@@ -125,7 +163,7 @@ const Dashboard = () => {
                       {status !== "Done" && (
                         <Button
                           size="sm"
-                          onClick={() => updateTaskStatus(task.id, "forward")}
+                          onClick={() => updateTaskStatus(task.id, task.status, "forward")}
                         >
                           Move Forward &rarr;
                         </Button>
@@ -148,6 +186,7 @@ const Dashboard = () => {
   );
 };
 
+// Function to get background color based on task status
 const getColumnBackgroundColor = (status) => {
   switch (status) {
     case "To-Do":
