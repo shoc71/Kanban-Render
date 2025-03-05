@@ -1,90 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
+
+import { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 
 const Dashboard = () => {
   const username = localStorage.getItem("username") || "User";
-  const userId = localStorage.getItem("user_id"); // Ensure user_id is stored after login
+  const userId = localStorage.getItem("user_id"); // Assuming the user ID is stored when logged in
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
 
-  // Fetch tasks for the logged-in user
   useEffect(() => {
-    if (!userId) return;
-    fetch(`/tasks?user_id=${userId}`)
+    fetch("/dashboard")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setTasks(data.data);
-        } else {
-          console.error("Error fetching tasks:", data.message);
-        }
-      })
+      .then((data) => setTasks(data))
       .catch((err) => console.error("Error fetching tasks:", err));
-  }, [userId]);
+  }, []);
 
-  // Add a new task
   const addTask = async () => {
-    if (!newTask.trim() || !userId) return;
+    if (!newTask.trim()) return;
 
-    const task = { title: newTask, status: "To-Do", user_id: userId };
-
+    const task = { title: newTask, status: "To-Do", userId };
+    
     try {
-      const res = await fetch("/tasks", {
+      const res = await fetch("/dashboard", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(task),
       });
-
-      const data = await res.json();
-      if (data.success) {
-        setTasks([...tasks, data.data]);
-        setNewTask("");
-      } else {
-        console.error("Error adding task:", data.message);
-      }
+      const newTaskFromDB = await res.json();
+      setTasks([...tasks, newTaskFromDB]);
+      setNewTask("");
     } catch (err) {
       console.error("Error adding task:", err);
     }
   };
 
-  // Delete a task
   const deleteTask = async (id) => {
     try {
-      const res = await fetch(`/tasks/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setTasks(tasks.filter((task) => task.id !== id));
-      } else {
-        console.error("Error deleting task:", data.message);
-      }
+      await fetch(`/dashboard/${id}`, {
+        method: "DELETE",
+      });
+      setTasks(tasks.filter((task) => task.id !== id));
     } catch (err) {
       console.error("Error deleting task:", err);
     }
   };
 
-  // Update task status
-  const updateTaskStatus = async (id, currentStatus, direction) => {
+  const updateTaskStatus = async (id, direction) => {
     const statusMap = {
       "To-Do": "In-Progress",
       "In-Progress": "Done",
       "Done": "To-Do",
     };
-    const newStatus = direction === "forward" ? statusMap[currentStatus] : statusMap["Done"];
+    const newStatus = direction === "forward" ? statusMap["To-Do"] : statusMap["Done"];
 
     try {
-      const res = await fetch(`/tasks/${id}`, {
+      const res = await fetch(`/dashboard/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ status: newStatus }),
       });
-
-      const data = await res.json();
-      if (data.success) {
-        setTasks(tasks.map((task) => (task.id === id ? data.data : task)));
-      } else {
-        console.error("Error updating task:", data.message);
-      }
+      const updatedTask = await res.json();
+      setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)));
     } catch (err) {
       console.error("Error updating task:", err);
     }
@@ -135,7 +117,7 @@ const Dashboard = () => {
                         <Button
                           size="sm"
                           variant="warning"
-                          onClick={() => updateTaskStatus(task.id, task.status, "backward")}
+                          onClick={() => updateTaskStatus(task.id, "backward")}
                         >
                           &larr; Back
                         </Button>
@@ -143,7 +125,7 @@ const Dashboard = () => {
                       {status !== "Done" && (
                         <Button
                           size="sm"
-                          onClick={() => updateTaskStatus(task.id, task.status, "forward")}
+                          onClick={() => updateTaskStatus(task.id, "forward")}
                         >
                           Move Forward &rarr;
                         </Button>
@@ -166,7 +148,6 @@ const Dashboard = () => {
   );
 };
 
-// Set column colors for each status
 const getColumnBackgroundColor = (status) => {
   switch (status) {
     case "To-Do":
