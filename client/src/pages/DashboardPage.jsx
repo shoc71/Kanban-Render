@@ -86,7 +86,7 @@ const Dashboard = () => {
       "In-Progress": "Done",
       "Done": "To-Do",
     };
-    const newStatus = direction === "forward" ? statusMap["To-Do"] : statusMap["Done"];
+    const newStatus = direction === "forward" ? statusMap[currentTask.status] : Object.keys(statusMap).find(key => statusMap[key] === currentTask.status);
     const token = localStorage.getItem("token");
 
     try {
@@ -98,10 +98,16 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
-      const updatedTask = await res.json();
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === id ? updatedTask : task)) // Update task in state
-      );
+       const updatedData = await res.json();
+      if (updatedData.success) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, status: newStatus } : task
+          )
+        );
+      } else {
+        console.error("Error updating task:", updatedData.message);
+      }
     } catch (err) {
       console.error("Error updating task:", err);
     }
