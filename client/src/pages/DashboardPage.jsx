@@ -86,7 +86,14 @@ const Dashboard = () => {
       "In-Progress": "Done",
       "Done": "To-Do",
     };
+
+    // Find the task from the tasks array based on the id
+    const currentTask = tasks.find((task) => task.id === id);
+    if (!currentTask) return;
+
+    // Get the new status based on the direction
     const newStatus = direction === "forward" ? statusMap[currentTask.status] : Object.keys(statusMap).find(key => statusMap[key] === currentTask.status);
+    
     const token = localStorage.getItem("token");
 
     try {
@@ -94,12 +101,14 @@ const Dashboard = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Include token for authorization
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });
-       const updatedData = await res.json();
+
+      const updatedData = await res.json();
       if (updatedData.success) {
+        // Update the task status in the state
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === id ? { ...task, status: newStatus } : task
@@ -150,7 +159,7 @@ const Dashboard = () => {
             {filteredTasks
               .filter((task) => task.status === status)
               .map((task) => (
-                <Card key={task.id} className="mb-2 p-2">
+                <Card key={task.id} className="mb-2 p-2 bg-dark">
                   <Card.Body>
                     <Card.Text>{task.title}</Card.Text>
                     <div className="d-flex justify-content-between">

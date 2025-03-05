@@ -9,7 +9,7 @@ function authorizeUser(req, res, next) {
 
     // If no token is found, respond with an unauthorized status
     if (!jwtToken) {
-        return res.status(403).json({ success: false, message: "Unauthorized JWT token!" });
+        return res.status(403).json({ success: false, message: `Unauthorized JWT token! => ${jwtToken}` });
     }
 
     try {
