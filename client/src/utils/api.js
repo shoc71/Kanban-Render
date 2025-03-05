@@ -9,11 +9,20 @@ export const loginUser = async (emailOrUsername, password) => {
             body: JSON.stringify({ emailOrUsername, password })
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to log in');
+        const data = await response.json();
+
+        if (response.ok) {
+            return {
+                success: true,
+                data: data, // Ensure `data` contains token and user_id
+            };
+        } else {
+            return {
+                success: false,
+                message: data.message || "Login failed",
+            };
         }
 
-        return await response.json();
     } catch (error) {
         return { success: false, message: `Server Client/Login error: ${error.message}` };
     }
