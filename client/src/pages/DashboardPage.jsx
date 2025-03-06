@@ -155,11 +155,11 @@ const Dashboard = () => {
       <Row>
         {["To-Do", "In-Progress", "Done"].map((status) => (
           <Col key={status} md={4} style={{ backgroundColor: getColumnBackgroundColor(status) }}>
-            <h4 className="text-center">{status}</h4>
+            <h4 className="text-center bg-dark text-white">{status}</h4>
             {filteredTasks
               .filter((task) => task.status === status)
               .map((task) => (
-                <Card key={task.id} className="mb-2 p-2 bg-dark">
+                <Card key={task.id} className="mb-2 p-2">
                   <Card.Body>
                     <Card.Text>{task.title}</Card.Text>
                     <div className="d-flex justify-content-between">
