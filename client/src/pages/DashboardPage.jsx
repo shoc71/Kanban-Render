@@ -49,21 +49,25 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Use token for authorization
+          "Authorization": `Bearer ${token}`, // Use token for "Authorization"
         },
-        body: JSON.stringify(task),
+        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
       });
 
-      const responseData = await res.json();
+      const updatedData = await res.json();
 
-      if (responseData.success) {
-        setTasks((prevTasks) => [responseData.data, ...prevTasks]);  // Add new task directly to state
-        setNewTask(""); // Reset input field
+      if (updatedData.success) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, title: editedTask } : task
+          )
+        );
+        setEditingTaskId(null); // Exit edit mode
       } else {
-        console.error("Error adding task:", responseData.message);
+        console.error("Error updating task:", updatedData.message);
       }
     } catch (err) {
-      console.error("Error adding task:", err);
+      console.error("Error updating task:", err);
     }
   };
 
@@ -74,7 +78,7 @@ const Dashboard = () => {
       await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`, // Include token for authorization
+          "Authorization": `Bearer ${token}`, // Include token for "Authorization"
         },
       });
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Remove deleted task from state
@@ -87,7 +91,7 @@ const Dashboard = () => {
     const statusMap = {
       "To-Do": "In-Progress",
       "In-Progress": "Done",
-      "Done": "To-Do",
+      Done: "To-Do",
     };
 
     const currentTask = tasks.find((task) => task.id === id);
@@ -96,7 +100,9 @@ const Dashboard = () => {
     const newStatus =
       direction === "forward"
         ? statusMap[currentTask.status]
-        : Object.keys(statusMap).find((key) => statusMap[key] === currentTask.status);
+        : Object.keys(statusMap).find(
+            (key) => statusMap[key] === currentTask.status
+          );
 
     const token = localStorage.getItem("token");
 
@@ -113,7 +119,9 @@ const Dashboard = () => {
       const updatedData = await res.json();
       if (updatedData.success) {
         setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task))
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, status: newStatus } : task
+          )
         );
       } else {
         console.error("Error updating task:", updatedData.message);
@@ -158,12 +166,12 @@ const Dashboard = () => {
     const lightModeColors = {
       "To-Do": "#f0f8ff",
       "In-Progress": "#fffacd",
-      "Done": "#d3ffd3",
+      Done: "#d3ffd3",
     };
     const darkModeColors = {
       "To-Do": "#2c3e50",
       "In-Progress": "#f39c12",
-      "Done": "#27ae60",
+      Done: "#27ae60",
     };
     return isDarkMode ? darkModeColors[status] : lightModeColors[status];
   };
@@ -173,8 +181,9 @@ const Dashboard = () => {
     setEditedTask(currentTitle);
   };
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title && task.title.toLowerCase().includes(filter.toLowerCase())
+  const filteredTasks = tasks.filter(
+    (task) =>
+      task.title && task.title.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
