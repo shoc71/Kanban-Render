@@ -18,7 +18,7 @@ const Dashboard = () => {
 
     fetch(`/api/tasks`, {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.json())
@@ -49,7 +49,7 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Use token for "Authorization"
+          Authorization: `Bearer ${token}`, // Use token for "Authorization"
         },
         body: JSON.stringify({ title: editedTask, status: currentTask.status }),
       });
@@ -78,7 +78,7 @@ const Dashboard = () => {
       await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`, // Include token for "Authorization"
+          Authorization: `Bearer ${token}`, // Include token for "Authorization"
         },
       });
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Remove deleted task from state
@@ -111,7 +111,7 @@ const Dashboard = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -134,16 +134,26 @@ const Dashboard = () => {
   const editTask = async (id) => {
     const token = localStorage.getItem("token");
 
+    if (!token) {
+      console.error("No token found in localStorage!");
+      return;
+    }
+
+    console.log("Sending token:", token); // Debugging line
+
     if (!editedTask.trim()) return;
+
+    const currentTask = tasks.find((task) => task.id === id);
+    if (!currentTask) return;
 
     try {
       const res = await fetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title: editedTask }),
+        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
       });
 
       const updatedData = await res.json();
