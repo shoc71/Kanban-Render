@@ -139,7 +139,7 @@ const Dashboard = () => {
       return;
     }
 
-    console.log("Sending token:", token); // Debugging line
+    // console.log("Sending token:", token); // Debugging line
 
     if (!editedTask.trim()) return;
 
