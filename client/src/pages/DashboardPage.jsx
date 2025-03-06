@@ -12,6 +12,13 @@ const Dashboard = () => {
   const [editedTask, setEditedTask] = useState("");
 
   useEffect(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+  }, []);
+
+  useEffect(() => {
     // Fetch tasks only if there's a valid user ID and token
     const token = localStorage.getItem("token");
     if (!userId || !token) return;
@@ -25,12 +32,21 @@ const Dashboard = () => {
       .then((data) => {
         if (data.success) {
           setTasks(data.data);
+          localStorage.setItem("tasks", JSON.stringify(data.data)); // ✅ Save to localStorage
         } else {
           console.error("Error fetching tasks:", data.message);
         }
       })
       .catch((err) => console.error("Error fetching tasks:", err));
   }, [userId]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }, 20000); // Every 20 seconds
+
+    return () => clearInterval(interval);
+  }, [tasks]);
 
   const addTask = async () => {
     const token = localStorage.getItem("token");
@@ -51,17 +67,54 @@ const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // Use token for "Authorization"
         },
-        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
+        body: JSON.stringify(task),
       });
 
       const updatedData = await res.json();
 
       if (updatedData.success) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === id ? { ...task, title: editedTask } : task
-          )
+        setTasks((prevTasks) => [...prevTasks, updatedData.data]); // Update state with new task
+        setNewTask(""); // Clear input
+      } else {
+        console.error("Error updating task:", updatedData.message);
+      }
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
+  };
+
+  const editTask = async (id) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token found in localStorage!");
+      return;
+    }
+
+    // console.log("Sending token:", token); // Debugging line
+
+    if (!editedTask.trim()) return;
+
+    const currentTask = tasks.find((task) => task.id === id);
+    if (!currentTask) return;
+
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
+      });
+
+      const updatedData = await res.json();
+      if (updatedData.success) {
+        const updatedTasks = tasks.map((task) =>
+          task.id === id ? { ...task, title: editedTask } : task
         );
+        setTasks(updatedTasks);
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
         setEditingTaskId(null); // Exit edit mode
       } else {
         console.error("Error updating task:", updatedData.message);
@@ -81,7 +134,9 @@ const Dashboard = () => {
           Authorization: `Bearer ${token}`, // Include token for "Authorization"
         },
       });
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Remove deleted task from state
+      const updatedTasks = tasks.filter((task) => task.id !== id);
+      setTasks(updatedTasks);
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks)); // Remove deleted task from state
     } catch (err) {
       console.error("Error deleting task:", err);
     }
@@ -123,47 +178,6 @@ const Dashboard = () => {
             task.id === id ? { ...task, status: newStatus } : task
           )
         );
-      } else {
-        console.error("Error updating task:", updatedData.message);
-      }
-    } catch (err) {
-      console.error("Error updating task:", err);
-    }
-  };
-
-  const editTask = async (id) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.error("No token found in localStorage!");
-      return;
-    }
-
-    // console.log("Sending token:", token); // Debugging line
-
-    if (!editedTask.trim()) return;
-
-    const currentTask = tasks.find((task) => task.id === id);
-    if (!currentTask) return;
-
-    try {
-      const res = await fetch(`/api/tasks/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
-      });
-
-      const updatedData = await res.json();
-      if (updatedData.success) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === id ? { ...task, title: editedTask } : task
-          )
-        );
-        setEditingTaskId(null); // Exit edit mode
       } else {
         console.error("Error updating task:", updatedData.message);
       }
