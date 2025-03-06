@@ -53,7 +53,7 @@ const Dashboard = () => {
 
       if (res.ok) {
         const newTaskFromDB = await res.json();
-        setTasks((prevTasks) => [...prevTasks, newTaskFromDB]); // Add new task directly to state
+        setTasks((prevTasks) => [newTaskFromDB, ...prevTasks]); // Add new task directly to state
         setNewTask(""); // Reset input field
       } else {
         const errorData = await res.json();
@@ -87,13 +87,14 @@ const Dashboard = () => {
       "Done": "To-Do",
     };
 
-    // Find the task from the tasks array based on the id
     const currentTask = tasks.find((task) => task.id === id);
     if (!currentTask) return;
 
-    // Get the new status based on the direction
-    const newStatus = direction === "forward" ? statusMap[currentTask.status] : Object.keys(statusMap).find(key => statusMap[key] === currentTask.status);
-    
+    const newStatus =
+      direction === "forward"
+        ? statusMap[currentTask.status]
+        : Object.keys(statusMap).find((key) => statusMap[key] === currentTask.status);
+
     const token = localStorage.getItem("token");
 
     try {
@@ -108,11 +109,8 @@ const Dashboard = () => {
 
       const updatedData = await res.json();
       if (updatedData.success) {
-        // Update the task status in the state
         setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === id ? { ...task, status: newStatus } : task
-          )
+          prevTasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task))
         );
       } else {
         console.error("Error updating task:", updatedData.message);
@@ -162,6 +160,9 @@ const Dashboard = () => {
                 <Card key={task.id} className="mb-2 p-2">
                   <Card.Body>
                     <Card.Text>{task.title}</Card.Text>
+                    <small className="text-muted">
+                      Created: {new Date(task.created_at).toLocaleString()}
+                    </small>
                     <div className="d-flex justify-content-between">
                       {status !== "To-Do" && (
                         <Button
