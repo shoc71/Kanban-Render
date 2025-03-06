@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editedTask, setEditedTask] = useState("");
+  const [taskEdits, setTaskEdits] = useState({}); // Store edited tasks separately
   const [showAutoSaveAlert, setShowAutoSaveAlert] = useState(false);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const Dashboard = () => {
       .then((data) => {
         if (data.success) {
           setTasks(data.data);
-          localStorage.setItem("tasks", JSON.stringify(data.data)); 
+          localStorage.setItem("tasks", JSON.stringify(data.data));
         } else {
           console.error("Error fetching tasks:", data.message);
         }
@@ -88,6 +89,7 @@ const Dashboard = () => {
 
   const editTask = async (id) => {
     const token = localStorage.getItem("token");
+    if (!taskEdits[id]?.trim() || !token) return;
 
     if (!token) {
       console.error("No token found in localStorage!");
@@ -108,17 +110,22 @@ const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title: editedTask, status: currentTask.status }),
+        body: JSON.stringify({ title: taskEdits[id], status: currentTask.status }),
       });
 
       const updatedData = await res.json();
       if (updatedData.success) {
         const updatedTasks = tasks.map((task) =>
-          task.id === id ? { ...task, title: editedTask } : task
+          task.id === id ? { ...task, title: taskEdits[id] } : task
         );
         setTasks(updatedTasks);
         localStorage.setItem("tasks", JSON.stringify(updatedTasks));
         setEditingTaskId(null); // Exit edit mode
+        setTaskEdits((prev) => {
+          const updatedEdits = { ...prev };
+          delete updatedEdits[id]; // Remove from edits after saving
+          return updatedEdits;
+        });
       } else {
         console.error("Error updating task:", updatedData.message);
       }
@@ -189,6 +196,11 @@ const Dashboard = () => {
     }
   };
 
+  const saveAllTasks = async () => {
+    const promises = Object.keys(taskEdits).map((taskId) => editTask(taskId));
+    await Promise.all(promises);
+  };
+
   const getColumnBackgroundColor = (status) => {
     const lightModeColors = {
       "To-Do": "#f0f8ff",
@@ -205,7 +217,7 @@ const Dashboard = () => {
 
   const startEditing = (id, currentTitle) => {
     setEditingTaskId(id);
-    setEditedTask(currentTitle);
+    setTaskEdits((prev) => ({ ...prev, [id]: currentTitle }));
   };
 
   const filteredTasks = tasks.filter(
@@ -220,6 +232,15 @@ const Dashboard = () => {
         Sometimes adding tasks don't update on-screen (immediately). Hit the
         darkmode button in topright to refresh.
       </p>
+      {showAutoSaveAlert && (
+        <Alert
+          variant="success"
+          className="position-fixed top-0 start-50 translate-middle-x"
+        >
+          Your work has been auto-saved and will continue to do so every 20
+          seconds.
+        </Alert>
+      )}
       <Form className="mt-4 d-flex">
         <Form.Control
           type="text"
@@ -243,6 +264,9 @@ const Dashboard = () => {
           onChange={(e) => setFilter(e.target.value)}
         />
       </div>
+      <Button className="mb-3" onClick={saveAllTasks} variant="info">
+        Save All Changes
+      </Button>
       <Row>
         {["To-Do", "In-Progress", "Done"].map((status) => (
           <Col
