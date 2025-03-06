@@ -22,10 +22,10 @@ function LoginPage() {
       setLoading(true); // Start loading
 
       // Call loginUser function from API utility
-      console.log("Login Function Type:", typeof loginUser);
+      // console.log("Login Function Type:", typeof loginUser);
       const res = await loginUser(emailOrUsername, password, navigate);
-      console.log("Response from loginUser:", res); 
-      console.log("Login Function:", typeof loginUser);
+      // console.log("Response from loginUser:", res); 
+      // console.log("Login Function:", typeof loginUser);
 
       // Check if the response is successful
       if (res.success) {
@@ -38,8 +38,8 @@ function LoginPage() {
           localStorage.setItem("user_id", user_id);
 
           // Log the stored values for debugging
-          console.log("Token stored:", token);
-          console.log("User ID stored:", user_id);
+          // console.log("Token stored:", token);
+          // console.log("User ID stored:", user_id);
 
           // Redirect to the dashboard after successful login
           setTimeout(() => navigate("/dashboard"), 5000);

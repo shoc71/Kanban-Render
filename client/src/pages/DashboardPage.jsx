@@ -7,6 +7,8 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
+   const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editedTask, setEditedTask] = useState("");
 
   useEffect(() => {
     // Fetch tasks only if there's a valid user ID and token
