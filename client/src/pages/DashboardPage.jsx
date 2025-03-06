@@ -163,6 +163,10 @@ const Dashboard = () => {
   return (
     <Container className="mt-4 min-vh-100">
       <h2 className="text-center">Welcome, {username}!</h2>
+      <p className="text-center">
+        Sometimes adding tasks don't update on-screen (immediately). Hit the
+        darkmode button in topright to refresh.
+      </p>
       <Form className="mt-4 d-flex">
         <Form.Control
           type="text"
@@ -188,7 +192,11 @@ const Dashboard = () => {
       </div>
       <Row>
         {["To-Do", "In-Progress", "Done"].map((status) => (
-          <Col key={status} md={4} style={{ backgroundColor: getColumnBackgroundColor(status) }}>
+          <Col
+            key={status}
+            md={4}
+            style={{ backgroundColor: getColumnBackgroundColor(status) }}
+          >
             <h4 className="text-center bg-dark text-white">{status}</h4>
             {filteredTasks
               .filter((task) => task.status === status)
@@ -236,11 +244,19 @@ const Dashboard = () => {
                         Delete
                       </Button>
                       {editingTaskId === task.id ? (
-                        <Button size="sm" variant="success" onClick={() => editTask(task.id)}>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => editTask(task.id)}
+                        >
                           Save
                         </Button>
                       ) : (
-                        <Button size="sm" variant="info" onClick={() => startEditing(task.id, task.title)}>
+                        <Button
+                          size="sm"
+                          variant="info"
+                          onClick={() => startEditing(task.id, task.title)}
+                        >
                           Edit
                         </Button>
                       )}
