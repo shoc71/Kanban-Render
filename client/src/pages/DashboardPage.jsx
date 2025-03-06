@@ -91,15 +91,6 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     if (!taskEdits[id]?.trim() || !token) return;
 
-    if (!token) {
-      console.error("No token found in localStorage!");
-      return;
-    }
-
-    // console.log("Sending token:", token); // Debugging line
-
-    if (!editedTask.trim()) return;
-
     const currentTask = tasks.find((task) => task.id === id);
     if (!currentTask) return;
 
@@ -110,15 +101,19 @@ const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title: taskEdits[id], status: currentTask.status }),
+        body: JSON.stringify({
+          title: taskEdits[id],
+          status: currentTask.status,
+        }),
       });
 
       const updatedData = await res.json();
       if (updatedData.success) {
-        const updatedTasks = tasks.map((task) =>
-          task.id === id ? { ...task, title: taskEdits[id] } : task
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, title: taskEdits[id] } : task
+          )
         );
-        setTasks(updatedTasks);
         localStorage.setItem(
           "tasks",
           JSON.stringify(
@@ -127,10 +122,10 @@ const Dashboard = () => {
             )
           )
         );
-        setEditingTaskId(null); // Exit edit mode
+        setEditingTaskId(null);
         setTaskEdits((prev) => {
           const updatedEdits = { ...prev };
-          delete updatedEdits[id]; // Remove from edits after saving
+          delete updatedEdits[id];
           return updatedEdits;
         });
       } else {
@@ -281,7 +276,7 @@ const Dashboard = () => {
                     {editingTaskId === task.id ? (
                       <Form.Control
                         type="text"
-                        value={editedTask}
+                        value={taskEdits[task.id] || ""}
                         onChange={(e) =>
                           setTaskEdits((prev) => ({
                             ...prev,
