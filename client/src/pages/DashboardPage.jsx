@@ -119,7 +119,14 @@ const Dashboard = () => {
           task.id === id ? { ...task, title: taskEdits[id] } : task
         );
         setTasks(updatedTasks);
-        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+        localStorage.setItem(
+          "tasks",
+          JSON.stringify(
+            tasks.map((task) =>
+              task.id === id ? { ...task, title: taskEdits[id] } : task
+            )
+          )
+        );
         setEditingTaskId(null); // Exit edit mode
         setTaskEdits((prev) => {
           const updatedEdits = { ...prev };
@@ -232,15 +239,6 @@ const Dashboard = () => {
         Sometimes adding tasks don't update on-screen (immediately). Hit the
         darkmode button in topright to refresh.
       </p>
-      {showAutoSaveAlert && (
-        <Alert
-          variant="success"
-          className="position-fixed top-0 start-50 translate-middle-x"
-        >
-          Your work has been auto-saved and will continue to do so every 20
-          seconds.
-        </Alert>
-      )}
       <Form className="mt-4 d-flex">
         <Form.Control
           type="text"
@@ -284,7 +282,12 @@ const Dashboard = () => {
                       <Form.Control
                         type="text"
                         value={editedTask}
-                        onChange={(e) => setEditedTask(e.target.value)}
+                        onChange={(e) =>
+                          setTaskEdits((prev) => ({
+                            ...prev,
+                            [task.id]: e.target.value,
+                          }))
+                        }
                         onBlur={() => editTask(task.id)} // Update on blur
                         autoFocus
                       />
@@ -344,6 +347,15 @@ const Dashboard = () => {
           </Col>
         ))}
       </Row>
+      {showAutoSaveAlert && (
+        <Alert
+          variant="success"
+          className="position-fixed top-0 start-50 translate-middle-x"
+        >
+          Your work has been auto-saved and will continue to do so every 30
+          seconds.
+        </Alert>
+      )}
     </Container>
   );
 };
