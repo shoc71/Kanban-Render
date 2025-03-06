@@ -1,6 +1,5 @@
-import React from 'react';
-
-import { useState } from "react";
+import { Link } from "react-router-dom";
+import React, { useState } from "react";
 
 function Footer() {
   const [hoveredIcon, setHoveredIcon] = useState(null);
@@ -88,6 +87,11 @@ function Footer() {
         <div>
           <small>
             &copy; {new Date().getFullYear()} Mystery Orbs. All rights reserved.
+          </small>
+          <small>
+            <Link to="https://github.com/shoc71/Kanban-Render">
+            Source Code
+            </Link>
           </small>
         </div>
       </div>
