@@ -39,12 +39,7 @@ const Dashboard = () => {
       return;
     }
 
-    // Optimistically update UI with a temporary task
-    const tempId = Date.now(); // Temporary unique ID
-    const tempTask = { id: tempId, title: newTask, status: "To-Do", created_at: new Date().toISOString() };
-
-    setTasks((prevTasks) => [tempTask, ...prevTasks]); // Show task immediately
-    setNewTask(""); // Clear input field
+    const task = { title: newTask, status: "To-Do", user_id: userId };
 
     try {
       const res = await fetch("/api/tasks", {
@@ -53,27 +48,19 @@ const Dashboard = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`, // Use token for authorization
         },
-        body: JSON.stringify({ title: newTask, status: "To-Do", user_id: userId }),
+        body: JSON.stringify(task),
       });
 
       if (res.ok) {
         const newTaskFromDB = await res.json();
-
-        setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === tempId ? newTaskFromDB : task)) // Replace temp task with real one
-        );
+        setTasks((prevTasks) => [newTaskFromDB, ...prevTasks]); // Add new task directly to state
+        setNewTask(""); // Reset input field
       } else {
         const errorData = await res.json();
         console.error("Error adding task:", errorData.message);
-
-        // If API fails, remove the temporary task
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== tempId));
       }
     } catch (err) {
       console.error("Error adding task:", err);
-
-      // If API fails, remove the temporary task
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== tempId));
     }
   };
 
@@ -133,6 +120,42 @@ const Dashboard = () => {
     }
   };
 
+  const editTask = async (id) => {
+    const token = localStorage.getItem("token");
+
+    if (!editedTask.trim()) return;
+
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: editedTask }),
+      });
+
+      const updatedData = await res.json();
+      if (updatedData.success) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, title: editedTask } : task
+          )
+        );
+        setEditingTaskId(null); // Exit edit mode
+      } else {
+        console.error("Error updating task:", updatedData.message);
+      }
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
+  };
+
+  const startEditing = (id, currentTitle) => {
+    setEditingTaskId(id);
+    setEditedTask(currentTitle);
+  };
+
   const filteredTasks = tasks.filter((task) =>
     task.title && task.title.toLowerCase().includes(filter.toLowerCase())
   );
@@ -172,6 +195,17 @@ const Dashboard = () => {
               .map((task) => (
                 <Card key={task.id} className="mb-2 p-2">
                   <Card.Body>
+                    {editingTaskId === task.id ? (
+                      <Form.Control
+                        type="text"
+                        value={editedTask}
+                        onChange={(e) => setEditedTask(e.target.value)}
+                        onBlur={() => editTask(task.id)} // Update on blur
+                        autoFocus
+                      />
+                    ) : (
+                      <Card.Text>{task.title}</Card.Text>
+                    )}
                     <Card.Text>{task.title}</Card.Text>
                     <small className="text-muted">
                       Created: {new Date(task.created_at).toLocaleString()}
@@ -201,6 +235,15 @@ const Dashboard = () => {
                       >
                         Delete
                       </Button>
+                      {editingTaskId === task.id ? (
+                        <Button size="sm" variant="success" onClick={() => editTask(task.id)}>
+                          Save
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="info" onClick={() => startEditing(task.id, task.title)}>
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   </Card.Body>
                 </Card>

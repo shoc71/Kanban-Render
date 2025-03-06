@@ -81,17 +81,19 @@ function Footer() {
                 ></i>
               </a>
             </div>
+            <div>
+              <small>
+                <Link to="https://github.com/shoc71/Kanban-Render">
+                Source Code
+                </Link>
+              </small>
+            </div>
           </div>
         </div>
 
         <div>
           <small>
-            &copy; {new Date().getFullYear()} Mystery Orbs. All rights reserved.
-          </small>
-          <small>
-            <Link to="https://github.com/shoc71/Kanban-Render">
-            Source Code
-            </Link>
+            &copy; {new Date().getFullYear()} Mystery Orbs. All rights reserved. 
           </small>
         </div>
       </div>
