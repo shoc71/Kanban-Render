@@ -54,13 +54,13 @@ const Dashboard = () => {
         body: JSON.stringify(task),
       });
 
-      if (res.ok) {
-        const newTaskFromDB = await res.json();
-        setTasks((prevTasks) => [newTaskFromDB, ...prevTasks]); // Add new task directly to state
+      const responseData = await res.json();
+
+      if (responseData.success) {
+        setTasks((prevTasks) => [responseData.data, ...prevTasks]);  // Add new task directly to state
         setNewTask(""); // Reset input field
       } else {
-        const errorData = await res.json();
-        console.error("Error adding task:", errorData.message);
+        console.error("Error adding task:", responseData.message);
       }
     } catch (err) {
       console.error("Error adding task:", err);
