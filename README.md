@@ -1,7 +1,7 @@
 # Kanban-Karma
 written by shoc71
 
-![image](https://github.com/user-attachments/assets/78237226-a891-453b-83b4-d776a3aa2e0b)
+![image](https://github.com/user-attachments/assets/457d6b6c-66a7-4c08-9b2a-f9da4f572d30)
 
 ## Description
 A Kanban-Board set-up with tasks that the user can sign into. Tasks can be created, edited, and deleted depending on client needs and server stores all information about their tasks. Additional, boards can be created and their names can be edited as well. 
