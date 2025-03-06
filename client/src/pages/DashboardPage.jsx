@@ -39,7 +39,12 @@ const Dashboard = () => {
       return;
     }
 
-    const task = { title: newTask, status: "To-Do", user_id: userId };
+    // Optimistically update UI with a temporary task
+    const tempId = Date.now(); // Temporary unique ID
+    const tempTask = { id: tempId, title: newTask, status: "To-Do", created_at: new Date().toISOString() };
+
+    setTasks((prevTasks) => [tempTask, ...prevTasks]); // Show task immediately
+    setNewTask(""); // Clear input field
 
     try {
       const res = await fetch("/api/tasks", {
@@ -48,19 +53,27 @@ const Dashboard = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`, // Use token for authorization
         },
-        body: JSON.stringify(task),
+        body: JSON.stringify({ title: newTask, status: "To-Do", user_id: userId }),
       });
 
       if (res.ok) {
         const newTaskFromDB = await res.json();
-        setTasks((prevTasks) => [newTaskFromDB, ...prevTasks]); // Add new task directly to state
-        setNewTask(""); // Reset input field
+
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => (task.id === tempId ? newTaskFromDB : task)) // Replace temp task with real one
+        );
       } else {
         const errorData = await res.json();
         console.error("Error adding task:", errorData.message);
+
+        // If API fails, remove the temporary task
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== tempId));
       }
     } catch (err) {
       console.error("Error adding task:", err);
+
+      // If API fails, remove the temporary task
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== tempId));
     }
   };
 
