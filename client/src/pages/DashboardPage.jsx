@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editedTask, setEditedTask] = useState("");
+  const [showAutoSaveAlert, setShowAutoSaveAlert] = useState(false);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
@@ -32,7 +33,7 @@ const Dashboard = () => {
       .then((data) => {
         if (data.success) {
           setTasks(data.data);
-          localStorage.setItem("tasks", JSON.stringify(data.data)); // ✅ Save to localStorage
+          localStorage.setItem("tasks", JSON.stringify(data.data)); 
         } else {
           console.error("Error fetching tasks:", data.message);
         }
@@ -43,6 +44,8 @@ const Dashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       localStorage.setItem("tasks", JSON.stringify(tasks));
+      setShowAutoSaveAlert(true);
+      setTimeout(() => setShowAutoSaveAlert(false), 3000); // Alert disappears after 3 seconds
     }, 20000); // Every 20 seconds
 
     return () => clearInterval(interval);
@@ -78,8 +81,8 @@ const Dashboard = () => {
       } else {
         console.error("Error updating task:", updatedData.message);
       }
-    } catch (err) {
-      console.error("Error updating task:", err);
+    } catch (error) {
+      console.error("Error updating task:", error);
     }
   };
 
