@@ -48,7 +48,7 @@ This project is licensed under the [![License](https://opensource.org/licenses/A
 For any questions or concerns, please email mrdrlogic@gmail.com
 
 ## Links
-Youtube Tutorial: [Click Unlisted Video Here](#)
+Youtube Tutorial: [Kanban-Render-Walkthrough](https://youtu.be/kGZ5dT4Cwvs)
 
 Deployed Webpage: [https://kanban-render.onrender.com/](https://kanban-render.onrender.com/)
 
