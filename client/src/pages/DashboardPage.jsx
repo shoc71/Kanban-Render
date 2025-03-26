@@ -231,17 +231,16 @@ const Dashboard = () => {
     <Container className="mt-4 min-vh-100">
       <h2 className="text-center">Welcome, {username}!</h2>
       <p className="text-center">
-        Sometimes adding tasks don't update on-screen (immediately). Hit the
-        darkmode button in topright to refresh.
+        Add, Edit, or Delete Tasks! As you see fit, below!
       </p>
-      <Form className="mt-2 d-flex">
+      <Form className="mt-4 d-flex">
         <Form.Control
           type="text"
           placeholder="Enter new task"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
         />
-        <Button onClick={addTask} className="ms-2">
+        <Button onClick={addTask} className="ms-0">
           Add Task
         </Button>
       </Form>
@@ -354,18 +353,5 @@ const Dashboard = () => {
     </Container>
   );
 };
-
-// const getColumnBackgroundColor = (status) => {
-//   switch (status) {
-//     case "To-Do":
-//       return "#f0f8ff"; // Light Blue
-//     case "In-Progress":
-//       return "#fffacd"; // Light Yellow
-//     case "Done":
-//       return "#d3ffd3"; // Light Green
-//     default:
-//       return "#ffffff";
-//   }
-// };
 
 export default Dashboard;
