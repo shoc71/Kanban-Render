@@ -234,7 +234,7 @@ const Dashboard = () => {
         Sometimes adding tasks don't update on-screen (immediately). Hit the
         darkmode button in topright to refresh.
       </p>
-      <Form className="mt-4 d-flex">
+      <Form className="mt-2 d-flex">
         <Form.Control
           type="text"
           placeholder="Enter new task"
