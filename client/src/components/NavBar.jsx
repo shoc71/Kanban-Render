@@ -55,7 +55,7 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
               <Link
                 className="nav-link"
                 to="/contact-us"
-                style={{ fontSize: "1.7rem" }}
+                style={{ fontSize: "1.2rem" }}
               >
                 Contact Us
               </Link>
@@ -64,7 +64,7 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
               <Link
                 className="nav-link"
                 to="/settings"
-                style={{ fontSize: "1.7rem" }}
+                style={{ fontSize: "1.2rem" }}
               >
                 Settings
               </Link>
@@ -79,12 +79,12 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
                 {isLoggedIn ? (
                   <i
                     className="bi bi-check-circle"
-                    style={{ fontSize: "1.7rem" }}
+                    style={{ fontSize: "1.2rem" }}
                   ></i>
                 ) : (
                   <i
                     className="bi bi-person"
-                    style={{ fontSize: "1.7rem" }}
+                    style={{ fontSize: "1.2rem" }}
                   ></i>
                 )}
               </button>
