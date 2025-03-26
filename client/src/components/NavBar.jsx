@@ -24,7 +24,7 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
         <Link
           className="navbar-brand d-flex align-items-center"
           to="/"
-          style={{ fontSize: "2rem" }}
+          style={{ fontSize: "1.5rem" }}
         >
           <img
             src="https://shorturl.at/lepSy"
