@@ -1,0 +1,18 @@
+.contact-me-page {
+    background-color: #20c997;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.custom-btn {
+    background-color: #ffa94d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    /* transition: background 0.3s ease-in-out; */
+}
+
+.custom-btn:hover {
+    background-color: #ff922b;
+}

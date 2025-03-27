@@ -62,7 +62,7 @@ function LoginPage() {
       <h2 className="display-2">
         <b>Login</b>
       </h2>
-      <Form className="bg-primary rounded mt-5 p-5 ">
+      <Form className="bg-primary rounded mt-5 p-5">
         {error && <Alert variant="danger">{error}</Alert>}
         <Form.Group controlId="emailOrUsername">
           <Form.Label className="text-white h4">Email or Username</Form.Label>
