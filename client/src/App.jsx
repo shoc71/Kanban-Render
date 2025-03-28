@@ -9,12 +9,14 @@ import RegisterPage from "./pages/RegisterPage";
 
 import ErrorPage from "./utils/ErrorPage";
 import Dashboard from "./pages/DashboardPage";
-import ContactMePage from "./pages/ContactMePage"
-import SettingsPage from "./pages/SettingsPage"
+import ContactMePage from "./pages/ContactMePage";
+import SettingsPage from "./pages/SettingsPage";
+
+import PageWrapper from "./components/PageWrapper";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
     return token ? children : <Navigate to="/login" replace />;
   };
 
@@ -47,16 +49,23 @@ function App() {
       }}
     >
       <NavBar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={ <ProtectedRoute><Dashboard/></ProtectedRoute>} />
-        <Route path="/contact-us" element={ <ContactMePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        {/* <Route path="/about" element={<AboutMePage />} /> */}
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
+        <PageWrapper>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/dashboard" element=
+              {
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/contact-us" element={<ContactMePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<ErrorPage />} />
+          </Routes>
+        </PageWrapper>
       <Footer />
     </div>
   );

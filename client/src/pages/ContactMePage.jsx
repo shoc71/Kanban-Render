@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, Button } from 'react';
 import "../styles/ContactMePage.css"
 
-const ContactMePage = () => {
+const ContactMePage = ({isDarkMode}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -45,12 +45,12 @@ const ContactMePage = () => {
   };
 
   return (
-    <div className="container py-5 min-vh-100">
+    <div className={`container py-5 min-vh-100 ${isDarkMode ? "dark-mode-form" : "light-mode-form"}`}>
       <h2 className="text-center mb-4 display-4">Contact Me</h2>
 
-      <form onSubmit={handleSubmit} className="mx-auto contact-me-page" style={{ maxWidth: '1000px' }}>
+      <form onSubmit={handleSubmit} className="mx-auto contact-me-page p-5" style={{ maxWidth: '1000px' }}>
         <div className="mb-3">
-          <label htmlFor="name" className="form-label lead">Your Name</label>
+          <label htmlFor="name" className="form-label h4 text-dark">Your Name</label>
           <input
             type="text"
             className="form-control"
@@ -63,7 +63,7 @@ const ContactMePage = () => {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="email" className="form-label lead">Your Email</label>
+          <label htmlFor="email" className="form-label h4 text-dark">Your Email</label>
           <input
             type="email"
             className="form-control"
@@ -76,7 +76,7 @@ const ContactMePage = () => {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="message" className="form-label lead">Your Message</label>
+          <label htmlFor="message" className="form-label h4 text-dark">Your Message</label>
           <textarea
             className="form-control"
             id="message"
