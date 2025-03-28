@@ -56,7 +56,7 @@ function Footer() {
                   onMouseLeave={handleMouseLeave}
                 ></i>
               </a>
-              <a href="https://linkedin.com" target="_blank">
+              <a href="https://linkedin.com/in/sonu-ssingh/" target="_blank">
                 <i
                   className="bi bi-linkedin"
                   style={iconStyles("linkedin", "#0077b5")}
@@ -64,7 +64,7 @@ function Footer() {
                   onMouseLeave={handleMouseLeave}
                 ></i>
               </a>
-              <a href="https://github.com/shoc71" target="_blank">
+              <a href="https://github.com/shoc71/Kanban-Render" target="_blank">
                 <i
                   className="bi bi-github"
                   style={iconStyles("github", "#b3b3b3")}

@@ -115,6 +115,16 @@ function NavBar({ isDarkMode, toggleTheme, isLoggedIn }) {
                   Settings
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  to="/faq"
+                  style={{ fontSize: "1.2rem" }}
+                  aria-label="Go to settings"
+                >
+                  FAQ
+                </Link>
+              </li>
               {/* Auth Button */}
               <li className="nav-item d-flex align-items-center">
                 <button
